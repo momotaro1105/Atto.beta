@@ -5,6 +5,9 @@
     $file = fopen("data/email.txt","a");
     fwrite($file, $email."\n");
     fclose($file);
+
+    include("php/util.php");
+    console_log($email);
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +19,6 @@
     <title>Welcome</title>
 </head>
 <body>
-    
+    Redirecting shortly
 </body>
 </html>
