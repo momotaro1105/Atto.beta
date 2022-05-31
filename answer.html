@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <title>Answer a question</title>
+</head>
+<body id="ask">
+    <header>
+        <div class="header_left">
+            <i id="hidden_navbar" class="material-icons">dehaze</i>
+            <a id="logo" href="index.html">Attō</a>
+        </div>
+        <div class="header_right">
+            <div id="user_option">
+                <a target="_blank" href="ask.html">Ask</a>
+                <a target="_blank" href="answer.html">Answer</a>
+            </div>
+            <ul id="logged_in">
+                <li>
+                    <a href="">Log out</a>
+                </li>
+                <li>
+                    <i id="goto_userdashboard" class="material-icons">perm_identity</i>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="answer_body">
+        <div id="display_question">
+            <div id="question_top">
+                <div>
+                    <label for="title">Title:</label>
+                    <div class="question_display_css" id="question_title">
+                        <!-- append -->
+                    </div>
+                </div>
+                <div>
+                    <label for="tag">Tags:</label>
+                    <div class="question_display_css" id="question_tags">
+                        <!-- append -->
+                    </div>
+                    <label for="languages_versions">Languages used (version):</label>
+                    <div class="question_display_css" id="question_languages">
+                        <!-- append -->
+                    </div>
+                </div>
+                <div>
+                    <label for="purpose">What do you want the code to do?</label>
+                    <div class="question_display_css" id="question_purposes">
+                        <!-- append -->
+                    </div>
+                </div>
+                <div>
+                    <label for="current">What is it currently doing?</label>
+                    <div class="question_display_css" id="question_errors">
+                        <!-- append -->
+                    </div>
+                </div>
+            </div>
+            <div id="question_bottom">
+                <div id="tabs">
+                    <ul>
+                        <li id="html_tab" class="compiler_tab">html</li>
+                        <li id="css_tab" class="compiler_tab">css</li>
+                        <li id="js_tab" class="compiler_tab">javascript</li>
+                        <li id="output_tab" class="compiler_tab">output</li>
+                        <li id="console_tab" class="compiler_tab">console</li>
+                    </ul>
+                </div>
+                <div id="code_content">
+                    <textarea class="default content_textarea" name="" id="html_text"></textarea>
+                    <textarea class="default content_textarea" name="" id="css_text"></textarea>
+                    <textarea class="default content_textarea" name="" id="js_text"></textarea>
+                    <textarea class="default content_textarea" name="" id="output_text"></textarea>
+                    <textarea class="default content_textarea" name="" id="console_text"></textarea>
+                </div>
+            </div>
+        </div>
+        <div id="answers">
+            <div>
+                <label for="">What is wrong with the current code?</label>
+                <textarea name="" id="whats_wrong" cols="30" rows="10"></textarea>
+            </div>
+            <div>
+                <label for="">What is your coded solution?</label>
+                <textarea name="" id="correct_code" cols="30" rows="10"></textarea>
+            </div>
+            <div>
+                <label for="">Why does this solution work? What other improvements have you made?</label>
+                <textarea name="" id="why_correct" cols="30" rows="10"></textarea>
+            </div>
+        </div>
+        <button id="submit_answer_btn"><span>Submit</span></button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./js/firebase.js" type="module"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+        import { onValue, getDatabase, update, get, ref, push, set, onChildAdded, remove, onChildRemoved } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+
+        // get from local storage
+        const retrieve_questionID = localStorage.getItem("question_id_clicked");
+        const retrieve_userID = localStorage.getItem("atto_userlist_key");
+        // set some local variables
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = now.getMonth() + 1;
+        let date = now.getDate();
+        let today = year+" - "+month+" - "+date;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHwVwUgbyTJjasA39t71mPA74sWvxRyRg",
+            authDomain: "attoo-520bc.firebaseapp.com",
+            databaseURL: "https://attoo-520bc-default-rtdb.firebaseio.com",
+            projectId: "attoo-520bc",
+            storageBucket: "attoo-520bc.appspot.com",
+            messagingSenderId: "383412006221",
+            appId: "1:383412006221:web:3b2a7afb65cc7950cb9b04",
+            measurementId: "G-1KSBB9WW91"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        $("#html_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#html_text").removeClass("default");
+        });
+        $("#css_tab").on("click", function(){
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("css_tab").style.backgroundColor = "white";
+            $("#html_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#css_text").removeClass("default");
+        });
+        $("#js_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#js_text").removeClass("default");
+        });
+        $("#output_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#output_text").removeClass("default");
+        });
+        $("#console_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#console_text").removeClass("default");
+        });
+
+        // set global variables for data in question ID
+        var title_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/title"), (snapshot) => {
+            title_foranswer = snapshot.val();
+            document.getElementById("question_title").innerHTML = title_foranswer;
+        });
+        var tags_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/ques_tags"), (snapshot) => {
+            tags_foranswer = snapshot.val();
+            document.getElementById("question_tags").innerHTML = tags_foranswer;
+        });
+        var languages_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/languages"), (snapshot) => {
+            languages_foranswer = snapshot.val();
+            document.getElementById("question_languages").innerHTML = languages_foranswer;
+        });
+        var purpose_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/task"), (snapshot) => {
+            purpose_foranswer = snapshot.val();
+            document.getElementById("question_purposes").innerHTML = purpose_foranswer;
+        });
+        var error_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/error"), (snapshot) => {
+            error_foranswer = snapshot.val();
+            document.getElementById("question_errors").innerHTML = error_foranswer;
+        });
+        var html_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/html"), (snapshot) => {
+            html_foranswer = snapshot.val();
+            document.getElementById("html_text").value = html_foranswer;
+        });
+        var css_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/css"), (snapshot) => {
+            css_foranswer = snapshot.val();
+            document.getElementById("css_text").value = css_foranswer;
+        });
+        var js_foranswer;
+        onValue(ref(db, "question_list/"+retrieve_questionID+"/js"), (snapshot) => {
+            js_foranswer = snapshot.val();
+            document.getElementById("js_text").value = js_foranswer;
+        });
+
+        $("#submit_answer_btn").on("click", function(){
+            // define database
+            const answerListRef = ref(db, "answer_list/"+retrieve_questionID); 
+            const questionListRef = ref(db, "question_list/"+retrieve_questionID+"/answers");
+            const userListRef = ref(db, "user_list/"+retrieve_userID+"/answers/"+retrieve_questionID);
+
+            let whats_wrong = document.getElementById("whats_wrong").value;
+            let correct_code = document.getElementById("correct_code").value;
+            let why_correct = document.getElementById("why_correct").value;
+            const user = getAuth().currentUser;
+
+            const answer = {
+                answerer: user.uid,
+                question_id: retrieve_questionID,
+                whats_wrong: whats_wrong,
+                correct_code: correct_code,
+                why_correct: why_correct,
+                upvote: 0,
+                downvote: 0,
+                timestamp: today
+            };
+
+            setTimeout(function(){
+                set(answerListRef, answer);
+                set(questionListRef, answer);
+                set(userListRef, answer);
+                $("#whats_wrong").val('');
+                $("#correct_code").val('');
+                $("#why_correct").val('');
+            }, 500);
+        });
+
+        // redirect to dashboard
+        $("#goto_userdashboard").on("click", function(){
+            window.open("dashboard.html", '_blank');
+        });
+
+    </script>
+</body>
+</html>

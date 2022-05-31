@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <title>Ask a question</title>
+</head>
+<body id="ask">
+    <header>
+        <div class="header_left">
+            <i id="hidden_navbar" class="material-icons">dehaze</i>
+            <a id="logo" href="index.html">Attō</a>
+        </div>
+        <div class="header_right">
+            <div id="user_option">
+                <a target="_blank" href="ask.html">Ask</a>
+                <a target="_blank" href="answer.html">Answer</a>
+            </div>
+            <ul id="logged_in">
+                <li>
+                    <a href="">Log out</a>
+                </li>
+                <li>
+                    <i id="goto_userdashboard" class="material-icons">perm_identity</i>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="ask_body">
+        <div id="ask_form">
+            <form action="">
+                <label for="title">Title:</label>
+                    <input type="text" id="question_title" placeholder="TODO: suggest similar questions">
+                <label for="purpose">What do you want the code to do?</label>
+                    <textarea name="" id="question_purpose" cols="30" rows="10"></textarea>
+                <label for="current">What is it currently doing?</label>
+                    <!-- add section for error screenshot -->
+                    <textarea name="" id="question_error" cols="30" rows="10"></textarea>
+                <label for="languages_versions">Languages used (version):</label>
+                    <input type="text" id="language_tag" placeholder="TODO: display suggestions from code">
+                <label for="tag">Tags:</label>
+                    <input type="text" id="question_tag" placeholder="TODO: display suggestions from text input">
+                <div id="append_tags_here">
+                    <!-- tags to be appended here -->
+                </div>
+                <table id="date_tag">
+                    <tr>
+                        <td>Date Created: </td>
+                        <td id="append_today"></td>
+                    </tr>
+                </table>
+                <div id="submit_question">
+                    <button type="button" id="submit_question_btn">Submit</button>
+                </div>
+            </form>
+        </div>
+        <div id="ask_code">
+            <div id="tabs">
+                <ul>
+                    <li id="html_tab" class="compiler_tab">html</li>
+                    <li id="css_tab" class="compiler_tab">css</li>
+                    <li id="js_tab" class="compiler_tab">javascript</li>
+                    <li id="output_tab" class="compiler_tab">output</li>
+                    <li id="console_tab" class="compiler_tab">console</li>
+                </ul>
+            </div>
+            <div id="code_content">
+                <textarea class="default content_textarea" name="" id="html_text" placeholder="add html code here"></textarea>
+                <textarea class="default content_textarea" name="" id="css_text" placeholder="add css code here"></textarea>
+                <textarea class="default content_textarea" name="" id="js_text" placeholder="add javascript code here"></textarea>
+                <textarea class="default content_textarea" name="" id="output_text" placeholder="TODO: display based on copied code"></textarea>
+                <textarea class="default content_textarea" name="" id="console_text" placeholder="TODO: display based on copied code"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./js/firebase.js" type="module"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+        import { onValue, getDatabase, update, get, ref, push, set, onChildAdded, remove, onChildRemoved } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHwVwUgbyTJjasA39t71mPA74sWvxRyRg",
+            authDomain: "attoo-520bc.firebaseapp.com",
+            databaseURL: "https://attoo-520bc-default-rtdb.firebaseio.com",
+            projectId: "attoo-520bc",
+            storageBucket: "attoo-520bc.appspot.com",
+            messagingSenderId: "383412006221",
+            appId: "1:383412006221:web:3b2a7afb65cc7950cb9b04",
+            measurementId: "G-1KSBB9WW91"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // define date class
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = now.getMonth() + 1;
+        let date = now.getDate();
+        let today = year+" - "+month+" - "+date;
+
+        // use date to mark date tag
+        let append_today = document.getElementById("append_today");
+        append_today.append(today);
+
+        let language_list = ""; // empty string, because firebase doesn't accept arrays
+        // append language tags on enter
+        $("#language_tag").on("keydown", function(e){
+            let $language_tag = document.getElementById("language_tag");
+            let input_tag = $language_tag.value;
+            if (input_tag != null && e.keyCode == 13){
+                const tag_html_append = "<button type='button' class='user_tag'>"+input_tag+"</button>";
+                let $append_tags_here = document.getElementById("append_tags_here");
+                $append_tags_here.insertAdjacentHTML("beforeend", tag_html_append);
+                language_list += input_tag+" "; // add to string to add to database
+                console.log(language_list);
+                $("#language_tag").val('');
+            };
+        });
+
+        let ques_tag_list = "";
+        // append question tags on enter
+        $("#question_tag").on("keydown", function(e){
+            let $question_tag = document.getElementById("question_tag");
+            let input_tag = $question_tag.value;
+            if (input_tag != null && e.keyCode == 13){
+                const tag_html_append = "<button type='button' class='user_tag'>"+input_tag+"</button>";
+                let $append_tags_here = document.getElementById("append_tags_here");
+                $append_tags_here.insertAdjacentHTML("beforeend", tag_html_append);
+                ques_tag_list += input_tag+" ";
+                console.log(ques_tag_list);
+                $("#question_tag").val('');
+            };
+        });
+        
+        // create question database on submit click
+        $("#submit_question_btn").on("click", function(){
+            const user = getAuth().currentUser; // for creator uid
+
+            // below values from current DOM
+            let question_title = document.getElementById("question_title").value;
+            let question_purpose = document.getElementById("question_purpose").value;
+            let question_error = document.getElementById("question_error").value;
+            let html_text = document.getElementById("html_text").value;
+            let css_text = document.getElementById("css_text").value;
+            let js_text = document.getElementById("js_text").value;
+
+            // for each is only applicable to parent.length > 1 (i.e. more than 1 child)
+            // get(ref(db, "user_list/"+user.uid+"/num_ask")).then(function(snapshot){
+            //     console.log(snapshot.key);
+            //     console.log(snapshot.val());
+            // });
+
+            let question_id = user.uid;
+            var current_numask;
+            var current_score;
+
+            onValue(ref(db, "user_list/"+user.uid+"/num_ask"), (snapshot) => {
+                question_id += snapshot.val(); // timelag
+                current_numask = snapshot.val() + 1;
+            });
+
+            onValue(ref(db, "user_list/"+user.uid+"/score"), (snapshot) => {
+                current_score = snapshot.val() + 5;
+            });
+
+            // define object to be set and/or pushed
+            const question = {
+                creator: user.uid,
+                title: question_title,
+                task: question_purpose,
+                error: question_error,
+                languages: language_list,
+                ques_tags: ques_tag_list,
+                html: html_text,
+                css: css_text,
+                js: js_text,
+                question_id: user.uid+"0",
+                timestamp: today,
+                responses: 0
+            };
+            // add to database
+            setTimeout(function(){
+                // defined database paths
+                const newUserRef = ref(db, "user_list/"+user.uid+"/questions/"+question_id);
+                const dbRef = ref(db, "question_list/"+question_id); 
+                // save as child to existing
+                set(newUserRef, question); 
+                // save as new database
+                set(dbRef, question); 
+
+                const updateUser = ref(db, "user_list/"+user.uid);
+                // caution: set will overwrite everything
+                update(updateUser, { 
+                    num_ask: current_numask, // update number of questions asked
+                    score: current_score // update score, add 5 by asking a question
+                }); 
+            }, 500);
+
+            // delete any inputted text
+            $("#question_title").val('');
+            $("#question_purpose").val('');
+            $("#question_error").val('');
+            $("#html_text").val('');
+            $("#css_text").val('');
+            $("#js_text").val('');
+
+            window.open("dashboard.html", '_blank'); // relocate window to dashboard
+        });
+
+        // could have done loop, but めんどくさかった
+        $("#html_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#html_text").removeClass("default");
+        });
+        $("#css_tab").on("click", function(){
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("css_tab").style.backgroundColor = "white";
+            $("#html_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#css_text").removeClass("default");
+        });
+        $("#js_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#js_text").removeClass("default");
+        });
+        $("#output_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#console_text").addClass("default");
+            $("#output_text").removeClass("default");
+        });
+        $("#console_tab").on("click", function(){
+            document.getElementById("css_tab").style.backgroundColor = "#787878";
+            document.getElementById("html_tab").style.backgroundColor = "#787878";
+            document.getElementById("js_tab").style.backgroundColor = "#787878";
+            document.getElementById("output_tab").style.backgroundColor = "#787878";
+            document.getElementById("console_tab").style.backgroundColor = "white";
+            $("#css_text").addClass("default");
+            $("#js_text").addClass("default");
+            $("#output_text").addClass("default");
+            $("#html_text").addClass("default");
+            $("#console_text").removeClass("default");
+        });
+
+        // redirect to dashboard
+        $("#goto_userdashboard").on("click", function(){
+            window.open("dashboard.html", '_blank');
+        });
+
+    </script>
+</body>
+</html>

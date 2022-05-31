@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- https://materializecss.com/icons.html -->
+    <title>Dashboard</title>
+</head>
+<body id="dashboard">
+    <header></header>
+
+    <div id="dashboard_feed">
+        <div id="user_status">
+            <div id="user_icon">
+                <div id="user_icon_pic">
+                    <i class="fa fa-user fa-5x"></i>
+                </div>
+                <div id="overwrite_username">
+                    <input id="new_displayname" type="text" placeholder="Username: blank">
+                    <button id="set_displayname">Change username</button>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <td class="user_category">Member since:</td>
+                    <td id="since"></td>
+                </tr>
+                <tr>
+                    <td class="user_category">Asked:</td>
+                    <td id="num_ask"></td>
+                </tr>
+                <tr>
+                    <td class="user_category">Answered:</td>
+                    <td id="num_answer"></td>
+                </tr>
+                <tr>
+                    <td class="user_category">Current score:</td>
+                    <td id="score"></td>
+                </tr>
+                <tr>
+                    <td class="user_category">Achievements:</td>
+                    <td id="achievements"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="feed">
+            <!-- display feed of existing questions in order of posted and not answered -->
+            <div class="feed_div" id="ques_feed">
+                <h2>Questions:</h2>
+                <div class="feed_filters">
+                    <button>date</button>
+                    <button>javascript</button>
+                    <button>unanswered</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                </div>
+                <div class="append_feed" id="append_questions">
+                    <!-- append div here -->
+                </div>
+            </div>
+            <!-- display feed of recently answered questions that require voting -->
+            <div class="feed_div" id="voting_feed">
+                <h2>Answers:</h2>
+                <div class="feed_filters">
+                    <button>answers</button>
+                    <button>javascript</button>
+                    <button>votes</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                    <button>test</button>
+                </div>
+                <div class="append_feed" id="append_answers">
+                    <!-- append div here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/firebase.js" type="module"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+        import { onValue, getDatabase, get, ref, push, set, onChildAdded } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+        
+        // planning to create database for user info
+        // try importing below from firebase.js
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHwVwUgbyTJjasA39t71mPA74sWvxRyRg",
+            authDomain: "attoo-520bc.firebaseapp.com",
+            databaseURL: "https://attoo-520bc-default-rtdb.firebaseio.com",
+            projectId: "attoo-520bc",
+            storageBucket: "attoo-520bc.appspot.com",
+            messagingSenderId: "383412006221",
+            appId: "1:383412006221:web:3b2a7afb65cc7950cb9b04",
+            measurementId: "G-1KSBB9WW91"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, "user_list");
+
+        // wait for firebase.js && if user displayname is already set, display as such
+        getAuth().onAuthStateChanged(function(){
+            const user = getAuth().currentUser;
+            if (user && (user.displayName != null)){
+                // edit display name related html
+                document.getElementById("set_displayname").style.display = "none";
+                document.getElementById("new_displayname").value = user.displayName; // changing this from innerHTML to value made it execute quick enough as originally firebase was delaying the process
+                document.getElementById("new_displayname").disabled = true;
+            };
+        });
+
+        // change displayname (only once, as once changed, existing display name will load)
+        $("#set_displayname").on("click", function(){
+            const user = getAuth().currentUser;
+            let new_displayname = document.getElementById("new_displayname").value;
+            // add function to check if new displayname is unique within database
+            if (user && (user.displayName == null) && (new_displayname != "")){
+                updateProfile(user, {
+                    "displayName": new_displayname
+                })
+                    .then(() => {
+                        console.log("displayname successfully updated to "+user.displayName);
+                        document.getElementById("new_displayname").innerHTML = user.displayName;
+                        document.getElementById("new_displayname").disabled = true;
+                        document.getElementById("set_displayname").style.display = "none";
+
+                        // create user object to add to user_list database
+                        let now = new Date();
+                        let year = now.getFullYear();
+                        const new_user = {
+                            uid: user.uid,
+                            displayname: user.displayName,
+                            since: year,
+                            num_ask: 0,
+                            num_answer: 0,
+                            score: 0,
+                            achievements: [] // can you have an array as a value of key?
+                        }
+                        const newUserRef = ref(db, "user_list/"+user.uid); // set custom key as uid of current user
+                        set(newUserRef, new_user);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        console.log("update unsuccessful");
+                    });
+            };
+        });
+
+        // log out from header
+        $("#log_out").on("click", function(){
+            const user = getAuth().currentUser;
+            signOut(getAuth())
+                .then(() => {
+                    if (!user){
+                        console.log("sign out successful");
+                    } else {
+                        console.log("unsuccessful sign out attempt");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+
+        // on child added, change the inner html of table to current stats
+        // parameter 'data' is mandatory
+        onChildAdded(dbRef, function(data){
+            // retrieve newly added child
+            const new_user = data.val();
+            document.getElementById("since").innerHTML = new_user.since;
+            document.getElementById("num_ask").innerHTML = new_user.num_ask;
+            document.getElementById("num_answer").innerHTML = new_user.num_answer;
+            document.getElementById("score").innerHTML = new_user.score;
+            document.getElementById("achievements").innerHTML = "...";
+
+            // retrieve and save key to local storage
+            // just in case, for testing purposes ONLY for now
+            get(ref(db, "user_list")).then(function(snapshots){
+                snapshots.forEach(function(snapshot){
+                    localStorage.setItem("atto_userlist_key", snapshot.key);
+                });
+            });
+        });
+
+        // on child added to question list (i.e. new question asked)
+        const quesListRef = ref(db, "question_list");
+        onChildAdded(quesListRef, function(data){
+            // append to div to show as newsfeed
+            const user = getAuth().currentUser;
+
+            // get question id from db
+            var current_numask;
+            onValue(ref(db, "user_list/"+user.uid+"/num_ask"), (snapshot) => {
+                current_numask = snapshot.val();
+            });
+
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth() + 1;
+            let date = now.getDate();
+            let today = year+" - "+month+" - "+date;
+
+            // get userid from db
+            setTimeout(function(){
+                const param = ["title", "timestamp"];
+                onValue(ref(db, "question_list/"+user.uid+(current_numask-1)+"/title"), (snapshot) => {
+                    let title_to_append = snapshot.val();
+                    let ques_to_append = '<div><a target="_blank" class="from_question_feed" id="'+user.uid+(current_numask-1)+'" href="answer.html">'+title_to_append+'</a><p>posted by: '+user.displayName+' on "'+today+'"</p></div>';
+                    $("#append_questions").append(ques_to_append);
+                });
+            }, 500);
+        });
+
+        // on child added to answer list (i.e. new answer added)
+        const answerListRef = ref(db, "answer_list");
+        onChildAdded(quesListRef, function(data){
+            // append to div to show as newsfeed
+            const user = getAuth().currentUser;
+
+            // get question id from db
+            var current_numask;
+            onValue(ref(db, "user_list/"+user.uid+"/num_ask"), (snapshot) => {
+                current_numask = snapshot.val();
+            });
+
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth() + 1;
+            let date = now.getDate();
+            let today = year+" - "+month+" - "+date;
+
+            // get userid from db
+            setTimeout(function(){
+                const param = ["title", "timestamp"];
+                onValue(ref(db, "question_list/"+user.uid+(current_numask-1)+"/title"), (snapshot) => {
+                    let title_to_append = snapshot.val();
+                    let ques_to_append = '<div><a target="_blank" class="from_question_feed" id="'+user.uid+(current_numask-1)+'" href="answer.html">'+title_to_append+'</a><p>posted by: '+user.displayName+' on "'+today+'"</p></div>';
+                    $("#append_questions").append(ques_to_append);
+                });
+            }, 500);
+        });
+
+        setTimeout(function(){
+            $(document).ready(function(){
+                console.log("document is ready");
+                $(".from_question_feed").on("click", function(){
+                    localStorage.setItem("question_id_clicked", this.id);
+                });
+            });
+        }, 2000); // make up for timelag
+        
+        // open user dashboard on click icon in header
+        $("#goto_userdashboard").on("click", function(){
+            window.open("dashboard.html", '_blank');
+        });
+    </script>
+</body>
+</html>
+
+<!-- 発見：auth complete からの realtime database 作成時にuid等authに紐づいているvalueをdatabaseに入れてもauth削除の影響を受けない。作る作業はコピペに近いという事。 -->

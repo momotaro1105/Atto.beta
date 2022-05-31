@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- https://materializecss.com/icons.html -->
+    <title>Sign up</title>
+</head>
+
+<body id="signin">
+    <header>
+        <div class="header_left">
+            <i id="hidden_navbar" class="material-icons">dehaze</i>
+            <a id="logo" href="../index.html">Attō</a>
+        </div>
+        <div class="header_right">
+            <form id="searchbar">
+                <input name="query" type="search" placeholder="Search..." autocomplete="off" aria-label="Search"
+                    aria-controls="top-search">
+            </form>
+            <ul id="login_signup">
+                <li>
+                    <a href="login.html">Log in</a>
+                </li>
+                <li>
+                    <a href="signup.html">Sign up</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div id="signin_body">
+        <div id="signin_form">
+            <div>
+                <label for="email">Email</label>
+                <input id="user_email" type="text" required>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input id="user_password" type="password" required>
+                <i class="material-icons" id="togglepwd">remove_red_eye</i>
+            </div>
+            <button id="signin_submit">Log in</button>
+        </div>
+    </div>
+
+    <script src="./js/firebase.js" type="module"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="module"> // for local functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+
+        // toggle password
+        const togglePassword = document.getElementById("togglepwd");
+        const pwd = document.getElementById("user_password");
+        togglePassword.addEventListener("click", function (){
+            const inputtype = pwd.getAttribute("type") != "password" ? "password" : "text";
+            pwd.setAttribute("type", inputtype);
+        });
+
+    </script>
+</body>
+</html>
