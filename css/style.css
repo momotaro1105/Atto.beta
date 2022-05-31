@@ -175,16 +175,32 @@ header>div{
     border: 1px solid gray;
     padding: 10px;
     border-radius: 5px;
+    margin-top: 20px;
 }
 #signup_email>div{
     display: flex;
     flex-direction: column;
     width: 400px;
+    margin-bottom: 15px;
 }
-/* .togglepwd{
+#signup_email>div>label{
+    margin-bottom: 5px;
+}
+#toggle1, #toggle2{
     cursor: pointer;
-    margin-bottom: -50px;
-    margin-right: -300px;
-} */
+    position: absolute;
+    margin-left: 370px;
+    margin-top: 103px;
+}
+#toggle2{
+    margin-top: 176px;
+}
+#signup_submit{
+    margin-top: 30px;
+    background-color: #0995FF;
+    border: none;
+    color: white;
+    height: 40px;
+}
 /* SIGNUP.HTML */
 
