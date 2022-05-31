@@ -101,3 +101,8 @@ export function downloadFile(content, fileName, contentType) {
     a.download = fileName;
     a.click();
 };
+
+// prevent submit from reloading webpage
+$("#signup_submit").on("click", function(e){
+    e.preventDefault();
+});
