@@ -52,23 +52,23 @@
                     Sign up with GitHub
                 </button>
             </div>
-            <div id="signup_email">
+            <form id="signup_email" method="post" action="php/signup.php">
                 <div>
                     <label for="email">Email:</label>
-                    <input id="user_email" type="text" required>
+                    <input id="user_email" type="text" name="email" required>
                 </div>
                 <div>
                     <label for="password">Password:</label>
                     <input class="userpwd" id="userpwd_1" type="password" required>
                 </div>
-                <i class="material-icons togglepwd">remove_red_eye</i>
+                <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
                 <div>
                     <label for="password">Re-enter password:</label>
                     <input class="userpwd" id="userpwd_2" type="password" required>
                 </div>
-                <i class="material-icons togglepwd">remove_red_eye</i>
-                <button id="signup_submit">Sign up now</button>
-            </div>
+                <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
+                <input id="signup_submit" type="submit" value="Sign up"></button>
+            </form>
         </div>
     </div>
 
@@ -79,40 +79,52 @@
         changeHeader();
 
         // toggle password
-        const togglePassword = document.getElementById("togglepwd");
-        const pwd = document.getElementById("user_password");
-        togglePassword.addEventListener("click", function (){
-            const inputtype = pwd.getAttribute("type") != "password" ? "password" : "text";
-            pwd.setAttribute("type", inputtype);
-        });
+        for (let i = 0; i<2; i++){
+            const togglePassword = document.getElementsByClassName("togglepwd");
+            const pwd = document.getElementsByClassName("userpwd");
+            togglePassword[i].addEventListener("click", function (){
+                const inputtype = pwd[i].getAttribute("type") != "password" ? "password" : "text";
+                pwd[i].setAttribute("type", inputtype);
+            })
+        }
 
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 
-        
-
-        const auth = getAuth();
+        const $signup_submit = document.getElementById("signup_submit")
         // authenticate user with email and password
         function registerUser(){
-        const $email = document.getElementById("user_email");
-        const $password = document.getElementById("user_password");
-        const email = $email.value;
-        const password = $password.value;
-        // NOTE: when user is created, firebase automatically retains a signed in status
-        // BUT: if the page does not reload or visually change, you can re-use the form to add a new user
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                $email.value = "";
-                $password.value = "";
-                console.log("user created");
-                window.open("dashboard.html"); // relocate to a different html page
-            })
-            .catch((error) => {
-                console.log("error creating user");
-            });
-        };
-        document.getElementById("signup_submit").addEventListener("click", registerUser);
+            const auth = getAuth();
+
+            // password check
+            const $userpwd1 = document.getElementById("userpwd_1");
+            const $userpwd2 = document.getElementById("userpwd_2");
+            let password = "";
+            if (($userpwd2 != "") && ($userpwd1.value == $userpwd2.value)){
+                password = $userpwd2.value;
+            } else {
+                $userpwd1.style.borderColor = "red";
+                $userpwd2.style.borderColor = "red";
+            }
+
+            const $email = document.getElementById("user_email");
+            const email = $email.value;
+            // NOTE: when user is created, firebase automatically retains a signed in status
+            // BUT: if the page does not reload or visually change, you can re-use the form to add a new user
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    $email.value = "";
+                    $userpwd1.value = "";
+                    $userpwd2.value = "";
+                    console.log("user created");
+                    window.open("dashboard.html");
+                })
+                .catch((error) => {
+                    console.log("error creating user", error);
+                })
+        }
+        $signup_submit.addEventListener("click", registerUser);
     </script>
 </body>
 </html>

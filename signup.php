@@ -63,7 +63,7 @@
                     Sign up with GitHub
                 </button>
             </div>
-            <form id="signup_email" method="post" action="">
+            <form id="signup_email" method="post" action="php/signup.php">
                 <div>
                     <label for="email">Email:</label>
                     <input id="user_email" type="text" name="email" required>
@@ -106,6 +106,8 @@
         const $signup_submit = document.getElementById("signup_submit")
         // authenticate user with email and password
         function registerUser(){
+            const auth = getAuth();
+
             // password check
             const $userpwd1 = document.getElementById("userpwd_1");
             const $userpwd2 = document.getElementById("userpwd_2");
@@ -121,7 +123,7 @@
             const email = $email.value;
             // NOTE: when user is created, firebase automatically retains a signed in status
             // BUT: if the page does not reload or visually change, you can re-use the form to add a new user
-            createUserWithEmailAndPassword(getAuth(), email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .then(() => {
                     $email.value = "";
                     $userpwd1.value = "";
