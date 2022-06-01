@@ -68,7 +68,7 @@
                 <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
                 <div>
                     <label for="password">Re-enter password:</label>
-                    <input class="userpwd" id="userpwd_2" type="password" required>
+                    <input class="userpwd" id="userpwd_2" name="password" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
                 <input id="signup_submit" type="button" value="Sign up"></button>
@@ -77,7 +77,7 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="module">
+    <script>
         // toggle password
         for (let i = 0; i<2; i++){
             const $togglePassword = document.getElementsByClassName("togglepwd");
