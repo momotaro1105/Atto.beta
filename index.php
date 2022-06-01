@@ -1,15 +1,20 @@
+<?php
+    // include("header.php");
+    // include("util.php");
+    session_start();
+    console_log($_SESSION);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Attōβ</title>
 </head>
 <body id="homepage">
     <header></header>
-
     <div id="hp_body">
         <h1>Google.β for Developers</h1>
         <p>The three problems we aim to solve</p>
@@ -19,11 +24,5 @@
             <li>Information <u>outdated</u></li>
         </ol>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="module">
-        import { changeHeader } from "./js/firebase.js";
-        changeHeader();
-    </script>
 </body>
 </html>
