@@ -1,6 +1,6 @@
 <?php
-    include("php/header.php");
     session_start();
+    include("php/header.php");
     $header = logStatus();
 ?>
 
@@ -95,6 +95,7 @@
             const $userpwd2 = document.getElementById("userpwd_2");
             let password = "";
             if (($userpwd2 != "") && ($userpwd1.value === $userpwd2.value)){
+                // input type to remain a button (and PHP will not fire) until both passwords are the same
                 $signup_submit.setAttribute("type", "submit");
             } else {
                 $userpwd1.style.borderColor = "red";

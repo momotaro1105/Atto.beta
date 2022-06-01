@@ -1,6 +1,6 @@
 <?php
-    include("php/header.php");
     session_start();
+    include("php/header.php");
     $header = logStatus();
 ?>
 

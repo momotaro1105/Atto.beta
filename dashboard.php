@@ -1,13 +1,24 @@
 <?php
+    session_start();
+
     include("php/util.php");
     include("php/header.php");
-    session_start();
-    $_SESSION["loggedin"] = true;
     $header = logStatus();
+
+    $_SESSION["loggedInStatus"] = true;
+    $_SESSION["sessionID"] = session_id();
+    $_SESSION["sessionName"] = session_name();
 
     $email = $_POST["email"];
     $password = $_POST["password"];
     $userName = $_POST["userName"];
+    $timestamp = date("Y.m.d　H：i：s");
+    $question = 0;
+    $answer = 0;
+    $score = 0;
+    
+    // user database should contain: userName/email/password/dateCreated/lastLogIn/Questions/Answers/Score/lastSessionID
+
 ?>
 
 <html lang="en">
@@ -56,7 +67,6 @@
             </table>
         </div>
         <div id="userFeed">
-            <!-- display feed of existing questions in order of posted and not answered -->
             <div class="feed" id="userQuestions">
                 <h2>Questions asked:</h2>
                 <div class="feed_filters">
@@ -68,7 +78,6 @@
                     <!-- append div here -->
                 </div>
             </div>
-            <!-- display feed of recently answered questions that require voting -->
             <div class="feed" id="userAnswers">
                 <h2>Answered:</h2>
                 <div class="feed_filters">
@@ -84,12 +93,7 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="module">   
-        // open user dashboard on click icon in header
-        $("#goto_userdashboard").on("click", function(){
-            window.open("dashboard.html", '_blank');
-        });
+
     </script>
 </body>
 </html>
-
-<!-- 発見：auth complete からの realtime database 作成時にuid等authに紐づいているvalueをdatabaseに入れてもauth削除の影響を受けない。作る作業はコピペに近いという事。 -->
