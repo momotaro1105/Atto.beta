@@ -18,10 +18,10 @@
                 <div id="user_icon_pic">
                     <i class="fa fa-user fa-5x"></i>
                 </div>
-                <div id="overwrite_username">
+                <form id="overwrite_username" method="post">
                     <input id="new_displayname" type="text" placeholder="Username: blank">
-                    <button id="set_displayname">Change username</button>
-                </div>
+                    <input type="submit" id="set_displayname" value="Change username">
+                </form>
             </div>
             <table>
                 <tr>
@@ -94,6 +94,9 @@
     <script src="./js/firebase.js" type="module"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="module">
+        import { changeHeader } from "./js/firebase.js";
+        changeHeader();
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
         import { onValue, getDatabase, get, ref, push, set, onChildAdded } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";

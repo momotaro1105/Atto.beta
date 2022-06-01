@@ -95,18 +95,16 @@
         // authenticate user with email and password
         function registerUser(){
             const auth = getAuth();
-
             // password check
             const $userpwd1 = document.getElementById("userpwd_1");
             const $userpwd2 = document.getElementById("userpwd_2");
             let password = "";
-            if (($userpwd2 != "") && ($userpwd1.value == $userpwd2.value)){
+            if (($userpwd2 !== "") && ($userpwd1.value === $userpwd2.value)){
                 password = $userpwd2.value;
             } else {
                 $userpwd1.style.borderColor = "red";
                 $userpwd2.style.borderColor = "red";
             }
-
             const $email = document.getElementById("user_email");
             const email = $email.value;
             // NOTE: when user is created, firebase automatically retains a signed in status
