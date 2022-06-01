@@ -16,8 +16,9 @@
     $question = 0;
     $answer = 0;
     $score = 0;
-    
-    // user database should contain: userName/email/password/dateCreated/lastLogIn/Questions/Answers/Score/lastSessionID
+
+    console_log($userName);
+    // user database contains: userName/email/password/dateCreated/lastLogIn/Questions/Answers/Score/lastSessionID
 
 ?>
 
@@ -39,7 +40,7 @@
                     <i class="fa fa-user fa-5x"></i>
                 </div>
                 <form id="userName_form" method="post" action="">
-                    <input id="new_displayname" type="text" name="userName" placeholder="Username: blank">
+                    <input id="new_displayname" type="text" name="userName" placeholder="Username: blank"><?=h($userName)?>
                     <input type="submit" id="set_displayname" value="Change username">
                 </form>
             </div>
@@ -92,8 +93,15 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="module">   
-
+    <script>   
+        $new_displayname = document.getElementById("new_displayname");
+        $set_displayname = document.getElementById("set_displayname");
+        $set_displayname.addEventListener("click", function(){
+            new_displayname = $new_displayname.value;
+            $new_displayname.innerHTML = new_displayname;
+            $new_displayname.disabled = true;
+            $set_displayname.style.display = "none";
+        })
     </script>
 </body>
 </html>

@@ -271,3 +271,6 @@ header>div{
 #userFeed>div{
     height: 50%;
 }
+#new_displayname{
+    text-align: center;
+}
