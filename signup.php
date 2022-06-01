@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+<?php
+    include("php/header.php");
+    session_start();
+    $header = logStatus();
+?>
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -8,8 +13,7 @@
     <title>Sign up</title>
 </head>
 <body id="signup_page">
-    <header></header>
-
+    <header><?=$header?></header>
     <div id="signup_body">
         <div id="signup_message">
             <p>Join our community today</p>
@@ -52,7 +56,7 @@
                     Sign up with GitHub
                 </button>
             </div>
-            <form id="signup_email" method="post" action="php/signup.php">
+            <form id="signup_email" method="post" action="dashboard.php">
                 <div>
                     <label for="email">Email:</label>
                     <input id="user_email" type="text" name="email" required>
@@ -67,64 +71,36 @@
                     <input class="userpwd" id="userpwd_2" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                <input id="signup_submit" type="submit" value="Sign up"></button>
+                <input id="signup_submit" type="button" value="Sign up"></button>
             </form>
         </div>
     </div>
 
-    <script src="./js/firebase.js" type="module"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="module">
-        import { changeHeader } from "./js/firebase.js";
-        changeHeader();
-
         // toggle password
         for (let i = 0; i<2; i++){
-            const togglePassword = document.getElementsByClassName("togglepwd");
-            const pwd = document.getElementsByClassName("userpwd");
-            togglePassword[i].addEventListener("click", function (){
-                const inputtype = pwd[i].getAttribute("type") != "password" ? "password" : "text";
-                pwd[i].setAttribute("type", inputtype);
+            const $togglePassword = document.getElementsByClassName("togglepwd");
+            const $pwd = document.getElementsByClassName("userpwd");
+            $togglePassword[i].addEventListener("click", function (){
+                const inputtype = $pwd[i].getAttribute("type") != "password" ? "password" : "text";
+                $pwd[i].setAttribute("type", inputtype);
             })
         }
 
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-
-        const $signup_submit = document.getElementById("signup_submit")
-        // authenticate user with email and password
-        function registerUser(){
-            const auth = getAuth();
-
-            // password check
+        // check password match
+        const $signup_submit = document.getElementById("signup_submit");
+        $signup_submit.addEventListener("click", function(){
             const $userpwd1 = document.getElementById("userpwd_1");
             const $userpwd2 = document.getElementById("userpwd_2");
             let password = "";
-            if (($userpwd2 != "") && ($userpwd1.value == $userpwd2.value)){
-                password = $userpwd2.value;
+            if (($userpwd2 != "") && ($userpwd1.value === $userpwd2.value)){
+                $signup_submit.setAttribute("type", "submit");
             } else {
                 $userpwd1.style.borderColor = "red";
                 $userpwd2.style.borderColor = "red";
             }
-
-            const $email = document.getElementById("user_email");
-            const email = $email.value;
-            // NOTE: when user is created, firebase automatically retains a signed in status
-            // BUT: if the page does not reload or visually change, you can re-use the form to add a new user
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    $email.value = "";
-                    $userpwd1.value = "";
-                    $userpwd2.value = "";
-                    console.log("user created");
-                    window.open("dashboard.html");
-                })
-                .catch((error) => {
-                    console.log("error creating user", error);
-                })
-        }
-        $signup_submit.addEventListener("click", registerUser);
+        })
     </script>
 </body>
 </html>
