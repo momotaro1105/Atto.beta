@@ -1,12 +1,3 @@
-<?php
-    // file is created on page loaded
-    // whenever a file is opened, a new line is created so that 
-    $email = $_POST["email"];
-    $file = fopen("data/email.txt","a");
-    fwrite($file, $email."\n");
-    fclose($file);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,7 +67,7 @@
                     <input class="userpwd" id="userpwd_2" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                <input id="signup_submit" type="submit" value="Sign up"></button>
+                <input id="signup_submit" type="button" value="Sign up">
             </form>
         </div>
     </div>
