@@ -1,7 +1,4 @@
 <?php
-    // include("header.php");
-    // include("util.php");
-    session_start();
     console_log($_SESSION);
 ?>
 
