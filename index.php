@@ -1,9 +1,9 @@
 <?php
-    session_start();
     include("php/header.php");
+    include("php/util.php");
+    console_log($_SESSION);
     $header = logStatus();
 ?>
-
 <html lang="en">
 <head>
     <meta charset="utf-8">

@@ -1,23 +1,36 @@
 <?php
-    session_start();
-
     include("php/util.php");
     include("php/header.php");
     $header = logStatus();
 
-    $_SESSION["loggedInStatus"] = true;
-    $_SESSION["sessionID"] = session_id();
-    $_SESSION["sessionName"] = session_name();
+    $userInfo = $_POST; // email, password
+    if ($userInfo != null){
+        $_SESSION["loggedInStatus"] = true;
+        $_SESSION["sessionID"] = session_id();
+        $_SESSION["sessionName"] = session_name();
+        $_SESSION["email"] = $userInfo["email"];
+    }
+    console_log($_SESSION);
 
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-    $userName = $_POST["userName"];
-    $timestamp = date("Y.m.d　H：i：s");
-    $question = 0;
-    $answer = 0;
-    $score = 0;
+    $dsn = 'mysql:dbname=userInfo;host=localhost;charset=utf8';
+    $user = 'root';
+    $password = '';    
+    try {
+        $dbh = new PDO($dsn, $user, $password);
+        $sql = 'CREATE TABLE IF NOT EXISTS '."userInfo".' (id INT(11) NOT NULL auto_increment PRIMARY KEY, email TEXT, password VARCHAR(10)) DEFAULT CHARSET="utf8"';
+        $result = $dbh -> query($sql);
+    } catch (PDOException $e) {
+        exit($e->getMessage());
+    }
+    
 
-    console_log($userName);
+    // $timestamp = date("Y.m.d H:i:s");
+    // $question = 0;
+    // $answer = 0;
+    // $score = 0;
+    // $userInfo["dateCreated"] = $timestamp;
+    // console_log($userInfo);    
+
     // user database contains: userName/email/password/dateCreated/lastLogIn/Questions/Answers/Score/lastSessionID
 
 ?>
@@ -39,9 +52,9 @@
                 <div id="userIcon">
                     <i class="fa fa-user fa-5x"></i>
                 </div>
-                <form id="userName_form" method="post" action="">
+                <form id="userName_form" method="post" action="dashboard.php">
                     <input id="new_displayname" type="text" name="userName" placeholder="Username: blank"><?=h($userName)?>
-                    <input type="submit" id="set_displayname" value="Change username">
+                    <input type="submit" id="set_displayname" value="Edit Profile">
                 </form>
             </div>
             <table>
