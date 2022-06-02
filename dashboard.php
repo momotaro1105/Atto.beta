@@ -1,33 +1,18 @@
 <?php
     include("php/util.php");
+
+    $userInfo = $_POST;
+
+    include("php/session.php");
+    loggedIn();
+
     include("php/header.php");
     $header = logStatus();
 
-    $userInfo = $_POST; // email, password
-    if ($userInfo != null){
-        $_SESSION["loggedInStatus"] = true;
-        $_SESSION["sessionID"] = session_id();
-        $_SESSION["sessionName"] = session_name();
-        $_SESSION["email"] = $userInfo["email"];
-    }
-    console_log($_SESSION);
-
-    $dsn = 'mysql:dbname=userInfo;host=localhost;charset=utf8';
-    $user = 'root';
-    $password = '';    
-    $dbh = new PDO($dsn, $user, $password);
-    try {
-        $sql = 'CREATE TABLE IF NOT EXISTS '.'userProfile'.' (id INT(12) NOT NULL auto_increment PRIMARY KEY, email VARCHAR(256), password VARCHAR(256)) DEFAULT CHARSET="utf8"';
-        $result = $dbh -> query($sql);
-    } catch (PDOException $e){
-        exit($e -> getMessage());
-    }
-
-    $addUser = 'INSERT INTO userProfile(email, password) VALUES(:email, :password)';
-    $stmt = $dbh -> prepare($addUser);
-    $stmt -> bindValue('email', $userInfo['email'], PDO::PARAM_STR);
-    $stmt -> bindValue('password', $userInfo['password'], PDO::PARAM_STR);
-    $status = $stmt -> execute();
+    include("php/database.php");
+    $dbh = lclDbConn('userInfo');
+    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256)', $dbh);
+    $status = addData('basicProfile', 'email,password', $dbh, $userInfo);
 ?>
 
 <html lang="en">

@@ -1,5 +1,7 @@
 <?php
     session_start();
+
+    // ログイン状態フラグからヘッダーを選択
     function logStatus(){
         if ($_SESSION["loggedInStatus"] == false){
             return '<div class="header_left"><a id="logo" href="index.php">Attōβ</a></div><div class="header_right"><form id="searchbar"><input name="query" type="search" placeholder="Search..." autocomplete="off" aria-label="Search" aria-controls="top-search"></form><ul id="login_signup_btns"><li><a href="">Log in</a></li><li><a href="signup.php">Sign up</a></li></ul></div>';
