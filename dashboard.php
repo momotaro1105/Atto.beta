@@ -15,24 +15,19 @@
     $dsn = 'mysql:dbname=userInfo;host=localhost;charset=utf8';
     $user = 'root';
     $password = '';    
+    $dbh = new PDO($dsn, $user, $password);
     try {
-        $dbh = new PDO($dsn, $user, $password);
-        $sql = 'CREATE TABLE IF NOT EXISTS '."userInfo".' (id INT(11) NOT NULL auto_increment PRIMARY KEY, email TEXT, password VARCHAR(10)) DEFAULT CHARSET="utf8"';
+        $sql = 'CREATE TABLE IF NOT EXISTS '.'userProfile'.' (id INT(12) NOT NULL auto_increment PRIMARY KEY, email VARCHAR(256), password VARCHAR(256)) DEFAULT CHARSET="utf8"';
         $result = $dbh -> query($sql);
-    } catch (PDOException $e) {
-        exit($e->getMessage());
+    } catch (PDOException $e){
+        exit($e -> getMessage());
     }
-    
 
-    // $timestamp = date("Y.m.d H:i:s");
-    // $question = 0;
-    // $answer = 0;
-    // $score = 0;
-    // $userInfo["dateCreated"] = $timestamp;
-    // console_log($userInfo);    
-
-    // user database contains: userName/email/password/dateCreated/lastLogIn/Questions/Answers/Score/lastSessionID
-
+    $addUser = 'INSERT INTO userProfile(email, password) VALUES(:email, :password)';
+    $stmt = $dbh -> prepare($addUser);
+    $stmt -> bindValue('email', $userInfo['email'], PDO::PARAM_STR);
+    $stmt -> bindValue('password', $userInfo['password'], PDO::PARAM_STR);
+    $status = $stmt -> execute();
 ?>
 
 <html lang="en">
