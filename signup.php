@@ -3,6 +3,10 @@
     include("php/util.php");
     console_log($_SESSION);
     $header = logStatus();
+
+    $userInfo = $_POST; //取得確認済み
+    // メールアドレスが存在するか確認、存在したらログイン画面に飛ぶボタン表示
+    // 問題なければ、ログインしてセッションに保存してdashboard.phpに移動
 ?>
 
 <html lang="en">
@@ -57,7 +61,7 @@
                     Sign up with GitHub
                 </button>
             </div>
-            <form id="signup_email" method="post" action="dashboard.php">
+            <form id="signup_email" method="post" action="">
                 <div>
                     <label for="email">Email:</label>
                     <input id="user_email" type="text" name="email" required>

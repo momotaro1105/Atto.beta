@@ -4,11 +4,10 @@
         echo "<script>console.log(".json_encode($input).")</script>";
     }
 
+
+
     // HTML entityに変換
     function h($input){
         return htmlspecialchars($input, ENT_QUOTES);
     }
-
-    // DBから情報取得して配列に保存
-
 ?>

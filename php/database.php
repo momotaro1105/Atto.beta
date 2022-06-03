@@ -51,6 +51,8 @@
         }
     }
     // $status = addData('basicProfile', 'email,password', $dbh, $userInfo);
-    
-    
+
+
+
+    // テーブルから情報取得して配列に保存
 ?>

@@ -7,6 +7,8 @@
         $_SESSION["sessionName"] = session_name();
     }
 
+
+    
     // ログアウト状態のセッション
     function logOut(){
         session_start();

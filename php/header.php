@@ -1,6 +1,8 @@
 <?php
     session_start();
 
+
+    
     // ログイン状態フラグからヘッダーを選択
     function logStatus(){
         if ($_SESSION["loggedInStatus"] == false){
