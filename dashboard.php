@@ -6,7 +6,6 @@
 
     include("php/header.php");
     $header = logStatus(); // ヘッダーを選択
-    header("Refresh:0");
 ?>
 
 <html lang="en">

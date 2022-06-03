@@ -11,25 +11,32 @@
     $exisDName = fldArray('displayName', 'basicProfile', $db); // テーブルから既存displayName値を配列形式で取得
     $errorMessage = [];
     // displayName確認
-    if (in_array($_POST['displayName'], $exisDName)){
-        $errorMessage = 'Please choose a different display name';
+    if (in_array($_POST['displayName'], $exisDName)){ // 既に使用されていないか
+        $errorMessage[] = 'Please choose a different display name';
     }
     // メールアドレス確認
     if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
-        $errorMessage = 'Please check your email address';
+        $errorMessage[] = 'Please check your email address';
     } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
-        $errorMessage = 'Email already in use: <a href="login.php">LOGIN LINK</a>';
+        $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN LINK</a>';
     } 
     // パスワード確認
-    if (!preg_match('/^(?=.*?[a-z])(?=.*?\d)[a-z\d]{4,10}$/i', $_POST['password'])){ // フォーマット確認
-        $errorMessage = 'Password requirements not met';
+    if (!preg_match('/^(?=.*?[a-z])(?=.*?\d)[a-z\d]{4,12}$/i', $_POST['password'])){ // フォーマット確認
+        $errorMessage[] = 'Password requirements not met';
     } 
+
+    session_start();
+    $_SESSION = $errorMessage;
+    console_log($errorMessage);
+    console_log($_SESSION);
     // エラーナシならデータ登録
-    // if (count($errorMessage) == 0) {
-    //     $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
-    //     $exisEmail = array(); // 確認用配列を空にする_必要かちょっと謎（アクセス毎に上書きされれば問題ナシ）
-    //     header('Location: dashboard.php');
-    // } 
+    if (count($errorMessage) == 0) {
+        console_log($errorMessage);
+        $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
+        $errorMessage = [];
+        session_destroy();
+        header('Location: dashboard.php');
+    } 
 ?>
 
 <html lang="en">
@@ -94,16 +101,21 @@
                     <input id="user_email" type="text" name="email" required>
                 </div>
                 <div>
-                    <label for="password">Password: (4 ~ 10 alphanumeric characters)</label>
+                    <label for="password">Password: (4 ~ 12 alphanumeric characters)</label>
                     <input class="userpwd" id="userpwd_1" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
                 <div>
-                    <label for="password">Re-enter password:</label>
+                    <label for="password">Confirm password:</label>
                     <input class="userpwd" id="userpwd_2" name="password" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                <span style='color:red'><?=$errorMessage?></span>
+                    <!-- html内のphpは書き方に工夫が必要 -->
+                    <?php if ($_SESSION !== []): ?>
+                        <?php for ($i=0;$i<count($_SESSION);$i++): ?>
+                            <span style='color:red'><?=$_SESSION[$i]?></span>
+                        <?php endfor; ?>
+                    <?php endif; ?>
                 <input id="signup_submit" type="button" value="Sign up">
             </form>
         </div>

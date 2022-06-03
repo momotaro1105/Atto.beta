@@ -11,7 +11,7 @@
     // ログアウト状態のセッション
     function logOut(){
         session_start();
-        $_SESSION = array();
+        $_SESSION = [];
         session_destroy();
     }
 ?>
