@@ -4,16 +4,39 @@
     console_log($_SESSION);
     $header = logStatus();
 
-    $userInfo = $_POST; //取得確認済み
-    // メールアドレスが存在するか確認、存在したらログイン画面に飛ぶボタン表示
-    // 問題なければ、ログインしてセッションに保存してdashboard.phpに移動
+    include("php/database.php");
+    $db = DbConn('userInfo'); // DB接続
+    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256)', $db); // テーブル作成
+    $exisEmail = fldArray('email', 'basicProfile', $db); // テーブルから既存email値を配列形式で取得
+    $exisDName = fldArray('displayName', 'basicProfile', $db); // テーブルから既存displayName値を配列形式で取得
+    $errorMessage = [];
+    // displayName確認
+    if (in_array($_POST['displayName'], $exisDName)){
+        $errorMessage = 'Please choose a different display name';
+    }
+    // メールアドレス確認
+    if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
+        $errorMessage = 'Please check your email address';
+    } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
+        $errorMessage = 'Email already in use: <a href="login.php">LOGIN LINK</a>';
+    } 
+    // パスワード確認
+    if (!preg_match('/^(?=.*?[a-z])(?=.*?\d)[a-z\d]{4,10}$/i', $_POST['password'])){ // フォーマット確認
+        $errorMessage = 'Password requirements not met';
+    } 
+    // エラーナシならデータ登録
+    // if (count($errorMessage) == 0) {
+    //     $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
+    //     $exisEmail = array(); // 確認用配列を空にする_必要かちょっと謎（アクセス毎に上書きされれば問題ナシ）
+    //     header('Location: dashboard.php');
+    // } 
 ?>
 
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?<?php echo date('YmdHis')?>">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Sign up</title>
 </head>
@@ -63,11 +86,15 @@
             </div>
             <form id="signup_email" method="post" action="">
                 <div>
+                    <label for="email">Display name:</label>
+                    <input id="user_displayName" type="text" name="displayName" required>
+                </div>
+                <div>
                     <label for="email">Email:</label>
                     <input id="user_email" type="text" name="email" required>
                 </div>
                 <div>
-                    <label for="password">Password:</label>
+                    <label for="password">Password: (4 ~ 10 alphanumeric characters)</label>
                     <input class="userpwd" id="userpwd_1" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
@@ -76,7 +103,8 @@
                     <input class="userpwd" id="userpwd_2" name="password" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                <input id="signup_submit" type="button" value="Sign up"></button>
+                <span style='color:red'><?=$errorMessage?></span>
+                <input id="signup_submit" type="button" value="Sign up">
             </form>
         </div>
     </div>
@@ -100,7 +128,7 @@
             const $userpwd2 = document.getElementById("userpwd_2");
             let password = "";
             if (($userpwd2 != "") && ($userpwd1.value === $userpwd2.value)){
-                // input type to remain a button (and PHP will not fire) until both passwords are the same
+                // 両パスが合わないと、type submitに変更されずPHPにデータが送信されない
                 $signup_submit.setAttribute("type", "submit");
             } else {
                 $userpwd1.style.borderColor = "red";

@@ -6,19 +6,14 @@
 
     include("php/header.php");
     $header = logStatus(); // ヘッダーを選択
-
-    include("php/database.php");
-    $userInfo = $_POST; // フォームからデータ取得
-    $dbh = lclDbConn('userInfo'); // 引数名のdbに接続
-    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256)', $dbh); // テーブル作成
-    $status = addData('basicProfile', 'email,password', $dbh, $userInfo); // データ登録
+    header("Refresh:0");
 ?>
 
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?<?php echo date('YmdHis')?>">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <title>User Dashboard</title>

@@ -4,7 +4,6 @@
         session_start();
         $_SESSION["loggedInStatus"] = true;
         $_SESSION["sessionID"] = session_id();
-        $_SESSION["sessionName"] = session_name();
     }
 
 

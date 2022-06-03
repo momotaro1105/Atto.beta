@@ -1,6 +1,5 @@
 <?php
-    session_start();
-    $_SESSION = array();
-    session_destroy();
+    include('php/session.php');
+    logOut();
     header("Location: index.php");
 ?>

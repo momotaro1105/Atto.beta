@@ -1,7 +1,7 @@
 <?php
     // PHP用 console.log
     function console_log($input){
-        echo "<script>console.log(".json_encode($input).")</script>";
+        echo '<script>console.log('.json_encode($input).')</script>';
     }
 
 

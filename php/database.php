@@ -1,6 +1,6 @@
 <?php
     // ローカル環境がデフォルト
-    function lclDbConn($dbName, $host = 'localhost', $userName = 'root', $pwd = ''){
+    function DbConn($dbName, $host = 'localhost', $userName = 'root', $pwd = ''){
         try {
             $dsn = 'mysql:dbname='.$dbName.';host='.$host.';charset=utf8';
             return new PDO($dsn, $userName, $pwd);
@@ -54,5 +54,10 @@
 
 
 
-    // テーブルから情報取得して配列に保存
+    // フィールドにある全ての値を取得して配列に保存
+    function fldArray($field, $tableName, $PDO){
+        $sql = 'SELECT '.$field.' FROM '.$tableName;
+        $result = $PDO -> query($sql);
+        return $result -> fetchAll(PDO::FETCH_COLUMN);
+    }
 ?>
