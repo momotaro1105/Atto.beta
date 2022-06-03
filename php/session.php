@@ -1,6 +1,6 @@
 <?php
     // ログイン状態のセッション
-    function loggedIn(){
+    function logIn(){
         session_start();
         $_SESSION["loggedInStatus"] = true;
         $_SESSION["sessionID"] = session_id();
@@ -8,7 +8,7 @@
     }
 
     // ログアウト状態のセッション
-    function loggedOut(){
+    function logOut(){
         session_start();
         $_SESSION = array();
         session_destroy();
