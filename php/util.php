@@ -9,8 +9,6 @@
         return htmlspecialchars($input, ENT_QUOTES);
     }
 
-    // bindValue()
-    // table書き込み
     // session関連
     // DBから情報取得して配列に保存
 

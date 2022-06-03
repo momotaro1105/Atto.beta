@@ -1,18 +1,17 @@
 <?php
     include("php/util.php");
 
-    $userInfo = $_POST;
-
     include("php/session.php");
-    loggedIn();
+    loggedIn(); // $_SESSION中身設定
 
     include("php/header.php");
-    $header = logStatus();
+    $header = logStatus(); // ヘッダーを選択
 
     include("php/database.php");
-    $dbh = lclDbConn('userInfo');
-    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256)', $dbh);
-    $status = addData('basicProfile', 'email,password', $dbh, $userInfo);
+    $userInfo = $_POST; // フォームからデータ取得
+    $dbh = lclDbConn('userInfo'); // 引数名のdbに接続
+    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256)', $dbh); // テーブル作成
+    $status = addData('basicProfile', 'email,password', $dbh, $userInfo); // データ登録
 ?>
 
 <html lang="en">
