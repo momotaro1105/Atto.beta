@@ -9,7 +9,6 @@
         return htmlspecialchars($input, ENT_QUOTES);
     }
 
-    // session関連
     // DBから情報取得して配列に保存
 
 ?>

@@ -1,9 +1,4 @@
 <?php
-    // $dbName = 'momo115_atto_demo';
-    // $host = 'mysql57.momo115.sakura.ne.jp';
-    // $userName = 'momo115';
-    // $pwd = 'atto_demo';
-
     // ローカル環境がデフォルト
     function lclDbConn($dbName, $host = 'localhost', $userName = 'root', $pwd = ''){
         try {
