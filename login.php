@@ -10,6 +10,7 @@
     $error = '';
     $pwdErr = '';
     $emailErr = '';
+    $failedLogInAttempt = 0;
     if (isset($_POST['password']) && isset($_SESSION['email'])){ // signup画面から来た場合
         $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
         if (password_verify($_POST['password'], $truePwd['password'])){ // 入力されたpwd確認
@@ -26,6 +27,7 @@
             if (password_verify($_POST['password'], $truePwd['password'])){ // pwd確認
                 logIn();
                 $_SESSION['email'] = $_POST['email'];
+                $failedLogInAttempt = 0;
                 header('Location: dashboard.php');
             } else { // pwdが間違っていた場合
                 $pwdErr = 'Password incorrect';

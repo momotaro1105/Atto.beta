@@ -6,7 +6,7 @@
     include("php/database.php");
     include("php/session.php");
     $db = DbConn('userInfo'); // DB接続
-    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256)', $db); // テーブル作成
+    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
     $errorMessage = [];
     if (count($_POST) > 0){ // 注意：フォームを送信しなくても、$_POSTはそもそもスーパーグローバル変数だから既に空の配列として存在している
         $exisEmail = fldArray('email', 'basicProfile', $db); // テーブルから既存email値を配列形式で取得
@@ -33,8 +33,9 @@
             session_start();
             logIn(); // セッションオブジェクトを更新
             $_SESSION['email'] = $_POST['email'];
+            $_POST['attempts'] = 0; // ログインセキュリティ用
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
-            $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
+            $status = addData('basicProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
             header('refresh:1;url=dashboard.php'); // ラグは念の為（上記配列処理用）
         }
     }
@@ -111,7 +112,6 @@
                     <input class="userpwd" id="userpwd_2" name="password" type="password" placeholder="1+ a~z/A~Z/#/special each, 4+ characters" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                    <!-- htmlタグ内のphp関数は便利 -->
                     <?php if ($errorMessage !== []): ?>
                         <?php for ($i=0;$i<count($errorMessage);$i++): ?>
                             <span style='color:red'><?=$errorMessage[$i]?></span>
