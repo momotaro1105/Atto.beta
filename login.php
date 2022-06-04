@@ -3,11 +3,19 @@
     include("php/util.php");
     $header = logStatus();
     session_start();
-    console_log($_SESSION); // 中身確認
 
-    // DB接続
-    // PDOクラスを使ってアドレスに該当するハッシュ済みパスを取得
-    // IF分でもしパスが一致していれば、ログイン
+    include("php/database.php");
+    $db = DbConn('userInfo'); // DB接続
+    if (isset($_POST['password']) && isset($_SESSION['email'])){ // signup画面から来た場合
+        $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みパスを取得
+        $error = '';
+        if (password_verify($_POST['password'], $truePwd['password'])){ // 入力されたパス確認
+            $_SESSION = [];
+            header('Location:dashboard.php');
+        } else {
+            $error = 'Incorrect password';
+        }
+    }    
     // セッションの中身削除
     // dashboard.phpに移動
 ?>
@@ -26,14 +34,34 @@
     <div>
         <form action="" method="post" id="loginForm">
             <label for="email">Email:</label>
-            <input type="text" name="email" id="loginEmail" required>
-            <label for="password">Password:</label>
-            <input type="text" name="password" id="loginPwd" required>
-            <!-- エラー表示 php -->
-            
-            <input id="loginSubmit" type="button" value="Log in">
+            <input type="text" name="email" id="loginEmail" value='' required>
+            <label for="password">Password: <a style="" id="forgot" href="">Forgot password?</a></label>
+            <input type="password" name="password" id="loginPwd" required>
+            <input id="loginSubmit" type="submit" value="Log in">
         </form>
-        <i class="material-icons togglepwd" id="toggle">remove_red_eye</i>
+        <i class="material-icons" id="toggle">remove_red_eye</i>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // toggle password
+        const $toggle = document.getElementById("toggle");
+        const $pwd = document.getElementById("loginPwd");
+        $toggle.addEventListener("click", function (){
+            const inputtype = $pwd.getAttribute("type") != "password" ? "password" : "text";
+            $pwd.setAttribute("type", inputtype);
+        })
+
+        // pre-populate input of email if user exists
+        const sessionEmail = '<?php echo $_SESSION['email'] ?>';
+        if (sessionEmail !== ''){
+            document.getElementById('loginEmail').value = sessionEmail;
+        }
+
+        const pwdError = '<?php echo $error ?>';
+        if (pwdError !== ''){
+            document.getElementById('loginPwd').placeholder = pwdError;
+            document.getElementById('forgot').style.color = 'red';
+        }
+    </script>
 </body>
 </html>

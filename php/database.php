@@ -62,4 +62,12 @@
     }
     // $existingEmail = fldArray('email', 'basicProfile', $db);
 
+
+
+    // sqlから条件付きデータ取得（基本一つの値を取得想定のため、配列化は不要とする）
+    function CondSQL($category, $tableName, $condition, $PDO){
+        $sql = 'SELECT '.$category.' FROM '.$tableName.' WHERE '.$condition;
+        $result = $PDO -> query($sql);
+        return $result -> fetch(PDO::FETCH_ASSOC);
+    }
 ?>

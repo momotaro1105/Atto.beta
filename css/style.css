@@ -298,7 +298,8 @@ header>div{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 400px;
+    width: 450px;
+    height: 300px;
     border-radius: 10px;
     border: 1px solid gray;
     padding: 30px 20px;
@@ -325,7 +326,7 @@ header>div{
 #toggle{
     cursor: pointer;
     position: absolute;
-    margin-bottom: -24px;
-    margin-right: -360px;
+    margin-bottom: -40px;
+    margin-right: -410px;
 }
 /* LOGIN.PHP */
