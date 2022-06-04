@@ -2,7 +2,7 @@
     include("php/util.php");
 
     include("php/session.php");
-    logIn(); // $_SESSION中身設定
+    logIn(); // $_SESSION中身基本設定
 
     include("php/header.php");
     $header = logStatus(); // ヘッダーを選択

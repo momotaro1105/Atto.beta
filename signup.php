@@ -7,36 +7,35 @@
     include("php/database.php");
     $db = DbConn('userInfo'); // DB接続
     $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256)', $db); // テーブル作成
-    $exisEmail = fldArray('email', 'basicProfile', $db); // テーブルから既存email値を配列形式で取得
-    $exisDName = fldArray('displayName', 'basicProfile', $db); // テーブルから既存displayName値を配列形式で取得
     $errorMessage = [];
-    // displayName確認
-    if (in_array($_POST['displayName'], $exisDName)){ // 既に使用されていないか
-        $errorMessage[] = 'Please choose a different display name';
-    }
-    // メールアドレス確認
-    if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
-        $errorMessage[] = 'Please check your email address';
-    } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
-        $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN LINK</a>';
-    } 
-    // パスワード確認
-    if (!preg_match('/^(?=.*?[a-z])(?=.*?\d)[a-z\d]{4,12}$/i', $_POST['password'])){ // フォーマット確認
-        $errorMessage[] = 'Password requirements not met';
-    } 
-
-    session_start();
-    $_SESSION = $errorMessage;
     console_log($errorMessage);
-    console_log($_SESSION);
-    // エラーナシならデータ登録
-    if (count($errorMessage) == 0) {
+    console_log(count($_POST));
+    if (count($_POST) > 0){ // 注意：フォームを送信しなくても、$_POSTはそもそもスーパーグローバル変数だから既に空の配列として存在している
+        $exisEmail = fldArray('email', 'basicProfile', $db); // テーブルから既存email値を配列形式で取得
+        $exisDName = fldArray('displayName', 'basicProfile', $db); // テーブルから既存displayName値を配列形式で取得
+        // displayName確認
+        if (in_array($_POST['displayName'], $exisDName)){ // 既に使用されていないか
+            $errorMessage[] = 'Please choose a different display name';
+        }
+        // メールアドレス確認
+        if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
+            $errorMessage[] = 'Please check your email address';
+        } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
+            $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN LINK</a>';
+        } 
+        // パスワード確認
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-!#*@&])[A-Za-z\d_\-!#*@&]{8,30}$/', $_POST['password'])){ // フォーマット確認
+            $errorMessage[] = 'Password requirements not met';
+        } 
         console_log($errorMessage);
-        $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
-        $errorMessage = [];
-        session_destroy();
-        header('Location: dashboard.php');
-    } 
+        // エラーナシならデータ登録
+        if (count($errorMessage) == 0) {
+            $errorMessage = [];
+            console_log($errorMessage);
+            $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
+            header('refresh:1;url=dashboard.php');
+        }
+    }
 ?>
 
 <html lang="en">
@@ -101,7 +100,7 @@
                     <input id="user_email" type="text" name="email" required>
                 </div>
                 <div>
-                    <label for="password">Password: (4 ~ 12 alphanumeric characters)</label>
+                    <label for="password">Password: (1 alpha/num/special, minlength 4)</label>
                     <input class="userpwd" id="userpwd_1" type="password" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
@@ -111,9 +110,9 @@
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
                     <!-- html内のphpは書き方に工夫が必要 -->
-                    <?php if ($_SESSION !== []): ?>
-                        <?php for ($i=0;$i<count($_SESSION);$i++): ?>
-                            <span style='color:red'><?=$_SESSION[$i]?></span>
+                    <?php if ($errorMessage !== []): ?>
+                        <?php for ($i=0;$i<count($errorMessage);$i++): ?>
+                            <span style='color:red'><?=$errorMessage[$i]?></span>
                         <?php endfor; ?>
                     <?php endif; ?>
                 <input id="signup_submit" type="button" value="Sign up">
