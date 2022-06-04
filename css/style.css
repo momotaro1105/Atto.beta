@@ -129,7 +129,7 @@ header>div{
 
 
 
-/* INDEX.HTML */
+/* INDEX.PHP */
 #homepage{
     background-image: linear-gradient(
         rgba(0, 0, 0, 0.4),
@@ -152,11 +152,11 @@ header>div{
 #hp_body>ol>li{
     color: white;
 }
-/* INDEX.HTML */
+/* INDEX.PHP */
 
 
 
-/* SIGNUP.HTML */
+/* SIGNUP.PHP */
 #signup_body{
     padding: 0 30px;
     display: flex;
@@ -231,11 +231,11 @@ header>div{
     color: white;
     height: 40px;
 }
-/* SIGNUP.HTML */
+/* SIGNUP.PHP */
 
 
 
-/* DASHBOARD.HTML */
+/* DASHBOARD.PHP */
 #dashboardAll{
     display: flex;
     height: calc(100vh - 50px);
@@ -277,3 +277,49 @@ header>div{
 #new_displayname{
     text-align: center;
 }
+/* DASHBOARD.PHP */
+
+
+/* LOGIN.PHP */
+#loginBody{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+#loginBody>div{
+    height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#loginForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 30px 20px;
+}
+#loginForm>*{
+    height: 100%;
+    width: 100%;
+    margin-bottom: 10px;
+}
+#loginForm>label{
+    text-align: left;
+}
+#loginEmail, #loginPwd{
+    margin-bottom: 30px;
+}
+#loginPwd{
+    margin-bottom: 60px;
+}
+#loginSubmit{
+    background-color: #0995FF;
+    border: none;
+    color: white;
+}
+/* LOGIN.PHP */
