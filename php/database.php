@@ -50,7 +50,7 @@
             return $status;
         }
     }
-    // $status = addData('basicProfile', 'email,password', $dbh, $userInfo);
+    // $status = addData('basicProfile', 'email,password', $dbh, $_POST);
 
 
 
@@ -60,4 +60,6 @@
         $result = $PDO -> query($sql);
         return $result -> fetchAll(PDO::FETCH_COLUMN);
     }
+    // $existingEmail = fldArray('email', 'basicProfile', $db);
+
 ?>
