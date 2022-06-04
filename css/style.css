@@ -322,4 +322,10 @@ header>div{
     border: none;
     color: white;
 }
+#toggle{
+    cursor: pointer;
+    position: absolute;
+    margin-bottom: -24px;
+    margin-right: -360px;
+}
 /* LOGIN.PHP */
