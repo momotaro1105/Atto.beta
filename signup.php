@@ -4,6 +4,7 @@
     $header = logStatus();
 
     include("php/database.php");
+    include("php/session.php");
     $db = DbConn('userInfo'); // DB接続
     $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256)', $db); // テーブル作成
     $errorMessage = [];
@@ -20,16 +21,18 @@
         } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
             session_start();
             $_SESSION['email'] = $_POST['email'];
-            console_log($_SESSION);
             $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN HERE</a>';
         } 
         // パスワード確認
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-!#*@&])[A-Za-z\d_\-!#*@&]{8,30}$/', $_POST['password'])){ // フォーマット確認
             $errorMessage[] = 'Password requirements not met';
         } 
-        // エラーナシならデータ登録
+        // エラー無しならデータ登録
         if (count($errorMessage) == 0) {
             $errorMessage = []; // 配列を空にする
+            session_start();
+            logIn(); // セッションオブジェクトを更新
+            $_SESSION['email'] = $_POST['email'];
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
             $status = addData('basicProfile', 'email,password,displayName', $db, $_POST); // データ登録
             header('refresh:1;url=dashboard.php'); // ラグは念の為（上記配列処理用）

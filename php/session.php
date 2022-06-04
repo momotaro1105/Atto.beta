@@ -2,7 +2,7 @@
     // ログイン状態のセッション
     function logIn(){
         session_start();
-        $_SESSION["loggedInStatus"] = true;
+        $_SESSION["loggedIn"] = true;
         $_SESSION["sessionID"] = session_id();
     }
 
