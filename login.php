@@ -10,32 +10,44 @@
     $error = '';
     $pwdErr = '';
     $emailErr = '';
-    $failedLogInAttempt = 0;
-    if (isset($_POST['password']) && isset($_SESSION['email'])){ // signup画面から来た場合
+    $LoginAttempts = CondSQL('attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+
+    // if ($LoginAttempts < 11){
+    //     // 10回まで可能
+    // } else {
+    //     // freeze account
+    // }
+
+    if (isset($_POST['password']) && isset($_SESSION['email'])){ // signupから
         $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
-        if (password_verify($_POST['password'], $truePwd['password'])){ // 入力されたpwd確認
+        if (password_verify($_POST['password'], $truePwd['password'])){ // pwd照合
             logIn();
+            updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
             header('Location:dashboard.php');
         } else {
             $error = 'Incorrect password';
+            updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
         }
-    } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginボタンから来た場合
-        console_log(count($_POST));
+    } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
         $emailList = fldArray('email', 'basicProfile', $db);
-        if (in_array($_POST['email'], $emailList)){ // メール確認
-            $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db); // 登録済みパスを取得
-            if (password_verify($_POST['password'], $truePwd['password'])){ // pwd確認
+        if (in_array($_POST['email'], $emailList)){ // メール登録済有無
+            $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+            if (password_verify($_POST['password'], $truePwd['password'])){
                 logIn();
+                updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
                 $_SESSION['email'] = $_POST['email'];
-                $failedLogInAttempt = 0;
                 header('Location: dashboard.php');
-            } else { // pwdが間違っていた場合
+            } else {
                 $pwdErr = 'Password incorrect';
+                updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
             }
-        } else { // メルが間違っていた場合
-            $emailErr = 'Email does not exist'; 
+        } else { // メール未登録の場合
+            $emailErr = 'Email not registered'; 
         }
     }
+
+    // if login attempts reach a specified threshold, manage the accunt
+    // forgot password時に何をするか？
 ?>
 
 <html lang="en">
@@ -53,7 +65,7 @@
         <form action="" method="post" id="loginForm">
             <label for="email">Email:</label>
                 <input type="text" name="email" id="loginEmail" value='' required>
-            <label for="password">Password: <a style="" id="forgot" href="">Forgot password?</a></label>
+            <label for="password">Password: <a id="forgot" href="">Forgot password?</a></label>
                 <input type="password" name="password" id="loginPwd" required>
             <input id="loginSubmit" type="submit" value="Log in">
         </form>

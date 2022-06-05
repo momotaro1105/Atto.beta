@@ -64,10 +64,25 @@
 
 
 
-    // sqlから条件付きデータ取得（基本一つの値を取得想定のため、配列化は不要とする）
+    // 条件からデータ取得（基本一つの値を取得想定）
     function CondSQL($category, $tableName, $condition, $PDO){
         $sql = 'SELECT '.$category.' FROM '.$tableName.' WHERE '.$condition;
         $result = $PDO -> query($sql);
         return $result -> fetch(PDO::FETCH_ASSOC);
     }
+    // $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db);
+
+
+
+    // DB値を更新（複数可）
+    function updateSQL($tableName, $newVal, $condition, $PDO){
+        $sql = 'UPDATE '.$tableName.' SET '.$newVal.' WHERE '.$condition;
+        $result = $PDO -> query($sql);
+        return $result -> fetch(PDO::FETCH_ASSOC);
+    }
+    // updateSQL('basicProfile', 'attempts='.$LoginAttempts['attempts'], 'email="'.$_POST['email'].'"', $db);
+
+
+
+    // DB int値を決まった数値で更新
 ?>

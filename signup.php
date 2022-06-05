@@ -36,7 +36,7 @@
             $_POST['attempts'] = 0; // ログインセキュリティ用
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
             $status = addData('basicProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
-            header('refresh:1;url=dashboard.php'); // ラグは念の為（上記配列処理用）
+            header('Location: dashboard.php');
         }
     }
 ?>
