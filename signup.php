@@ -8,17 +8,17 @@
     $db = DbConn('userInfo'); // DB接続
     $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
     $errorMessage = [];
-    if (count($_POST) > 0){ // 注意：フォームを送信しなくても、$_POSTはそもそもスーパーグローバル変数だから既に空の配列として存在している
-        $exisEmail = fldArray('email', 'basicProfile', $db); // テーブルから既存email値を配列形式で取得
-        $exisDName = fldArray('displayName', 'basicProfile', $db); // テーブルから既存displayName値を配列形式で取得
+    if (count($_POST) > 0){
+        $exisEmail = fldArray('email', 'basicProfile', $db); // 既存email値を取得
+        $exisDName = fldArray('displayName', 'basicProfile', $db); // 既存displayName値を取得
         // displayName確認
-        if (in_array($_POST['displayName'], $exisDName)){ // 既に使用されていないか
+        if (in_array($_POST['displayName'], $exisDName)){ // 使用済み確認
             $errorMessage[] = 'Display name taken';
         }
         // メールアドレス確認
         if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
             $errorMessage[] = 'Please check your email address';
-        } else if (in_array($_POST['email'], $exisEmail)){ // 既に使用されていないか
+        } else if (in_array($_POST['email'], $exisEmail)){
             session_start();
             $_SESSION['email'] = $_POST['email'];
             $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN HERE</a>';
