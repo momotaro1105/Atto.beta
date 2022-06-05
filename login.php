@@ -12,39 +12,41 @@
     $emailErr = '';
     $LoginAttempts = CondSQL('attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
 
-    // if ($LoginAttempts < 11){
-    //     // 10回まで可能
-    // } else {
-    //     // freeze account
-    // }
-
-    if (isset($_POST['password']) && isset($_SESSION['email'])){ // signupから
-        $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
-        if (password_verify($_POST['password'], $truePwd['password'])){ // pwd照合
-            logIn();
-            updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
-            header('Location:dashboard.php');
-        } else {
-            $error = 'Incorrect password';
-            updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
-        }
-    } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
-        $emailList = fldArray('email', 'basicProfile', $db);
-        if (in_array($_POST['email'], $emailList)){ // メール登録済有無
-            $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
-            if (password_verify($_POST['password'], $truePwd['password'])){
+    if ($LoginAttempts['attempts'] < 3){ // can fail 3 times
+        if (isset($_POST['password']) && isset($_SESSION['email'])){ // signupから
+            $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
+            if (password_verify($_POST['password'], $truePwd['password'])){ // pwd照合
                 logIn();
-                updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
-                $_SESSION['email'] = $_POST['email'];
-                header('Location: dashboard.php');
+                updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
+                header('Location:dashboard.php');
             } else {
-                $pwdErr = 'Password incorrect';
+                $error = 'Incorrect password';
                 updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
             }
-        } else { // メール未登録の場合
-            $emailErr = 'Email not registered'; 
+        } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
+            $emailList = fldArray('email', 'basicProfile', $db);
+            if (in_array($_POST['email'], $emailList)){ // メール登録済有無
+                $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+                if (password_verify($_POST['password'], $truePwd['password'])){
+                    logIn();
+                    updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
+                    $_SESSION['email'] = $_POST['email'];
+                    header('Location: dashboard.php');
+                } else {
+                    $pwdErr = 'Password incorrect';
+                    updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
+                }
+            } else { // メール未登録の場合
+                $emailErr = 'Email not registered'; 
+            }
         }
+    } else {
+        mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // 新テーブル作成
+        copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+        delData('basicProfile', 'email="'.$_POST['email'].'"', $db);     
     }
+
+    
 
     // forgot password時に何をするか？
 ?>
