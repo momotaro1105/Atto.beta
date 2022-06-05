@@ -12,7 +12,7 @@
 
 
 
-    // データベース内に引数名のテーブルが存在しない場合作成  **デフォルト値注意
+    // テーブルが存在しない場合作成
     function mkTbIF($tableName, $structure, $PDO){
         try {
             $sql = 'CREATE TABLE IF NOT EXISTS '.$tableName.' (id INT(12) NOT NULL auto_increment PRIMARY KEY,'.$structure.') DEFAULT CHARSET="utf8"';
@@ -25,7 +25,7 @@
 
 
 
-    // 下記データ登録用関数のみで使用
+    // 下記データ登録関数（のみ）で使用
     function cvtStruc($structure){
         $structureArray = explode(',', $structure);
         for ($i=0; $i<count($structureArray); $i++){
@@ -33,7 +33,7 @@
         }
         return implode(',', $structureArray);
     }
-    // データ登録  **$structureと$_POSTから取得したデータのnameは同一でなければならない
+    // データ登録
     function addData($tableName, $structure, $PDO, $postedData){
         $structured = cvtStruc($structure);
         $add = 'INSERT INTO '.$tableName.'('.$structure.') VALUES('.$structured.')';
@@ -54,7 +54,7 @@
 
 
 
-    // フィールドにある全ての値を取得して配列に保存
+    // フィールドにある全ての値を配列として取得
     function fldArray($field, $tableName, $PDO){
         $sql = 'SELECT '.$field.' FROM '.$tableName;
         $result = $PDO -> query($sql);
@@ -64,7 +64,7 @@
 
 
 
-    // 条件からデータ取得（基本一つの値を取得想定）
+    // 条件からデータ取得（基本一つの値を想定）
     function CondSQL($category, $tableName, $condition, $PDO){
         $sql = 'SELECT '.$category.' FROM '.$tableName.' WHERE '.$condition;
         $result = $PDO -> query($sql);
@@ -74,7 +74,7 @@
 
 
 
-    // DB値を更新（複数可）
+    // データ更新（複数同時に可）
     function updateSQL($tableName, $newVal, $condition, $PDO){
         $sql = 'UPDATE '.$tableName.' SET '.$newVal.' WHERE '.$condition;
         $result = $PDO -> query($sql);
@@ -84,5 +84,5 @@
 
 
 
-    // DB int値を決まった数値で更新
+    // 
 ?>

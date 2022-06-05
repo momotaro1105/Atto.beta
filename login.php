@@ -46,7 +46,6 @@
         }
     }
 
-    // if login attempts reach a specified threshold, manage the accunt
     // forgot password時に何をするか？
 ?>
 
