@@ -74,7 +74,7 @@
 
 
 
-    // データ更新（複数同時に可）
+    // データ更新（複数可）
     function updateSQL($tableName, $newVal, $condition, $PDO){
         $sql = 'UPDATE '.$tableName.' SET '.$newVal.' WHERE '.$condition;
         $result = $PDO -> query($sql);
@@ -84,5 +84,21 @@
 
 
 
-    // 
+    // 特定データの複製 注意：idを設定している場合、カテゴリ選択必須
+    function copyData($newTable, $values, $oldTable, $condition, $PDO){
+        $sql = 'INSERT INTO '.$newTable.' SELECT '.$values.' FROM '.$oldTable.' WHERE '.$condition;
+        $result = $PDO -> query($sql);
+        return $result -> fetch(PDO::FETCH_ASSOC);
+    }
+    // copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);      
+    
+    
+
+    // レコード削除
+    function delData($tableName, $condition, $PDO){
+        $sql = 'DELETE FROM '.$tableName.' WHERE '.$condition;
+        $result = $PDO -> query($sql);
+        return $result -> fetch(PDO::FETCH_ASSOC);
+    }
+    // delData('basicProfile', 'email="'.$_POST['email'].'"', $db);     
 ?>
