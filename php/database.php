@@ -84,7 +84,7 @@
 
 
 
-    // 特定データの複製 注意：idを設定している場合、カテゴリ選択必須
+    // 特定データの複製 注意：primary key idを設定している場合、下記例のようなカテゴリ指定必須
     function copyData($newTable, $values, $oldTable, $condition, $PDO){
         $sql = 'INSERT INTO '.$newTable.' SELECT '.$values.' FROM '.$oldTable.' WHERE '.$condition;
         $result = $PDO -> query($sql);

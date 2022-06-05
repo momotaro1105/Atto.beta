@@ -25,6 +25,7 @@
             }
         } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
             $emailList = fldArray('email', 'basicProfile', $db);
+            $frozEmail = fldArray('email', 'frozenAccounts', $db);
             if (in_array($_POST['email'], $emailList)){ // メール登録済有無
                 $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
                 if (password_verify($_POST['password'], $truePwd['password'])){
@@ -36,6 +37,8 @@
                     $pwdErr = 'Password incorrect';
                     updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
                 }
+            } else if (!in_array($_POST['email'], $emailList) && in_array($_POST['email'], $frozEmail)){
+                $emailErr = 'Account has been locked'; 
             } else { // メール未登録の場合
                 $emailErr = 'Email not registered'; 
             }
@@ -43,10 +46,9 @@
     } else {
         mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // 新テーブル作成
         copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
-        delData('basicProfile', 'email="'.$_POST['email'].'"', $db);     
+        delData('basicProfile', 'email="'.$_POST['email'].'"', $db);
+        $emailErr = 'Account has been locked'; 
     }
-
-    
 
     // forgot password時に何をするか？
 ?>
@@ -102,6 +104,15 @@
         const emailErr = '<?php echo $emailErr ?>';
         if (emailErr !== ''){
             document.getElementById('loginEmail').placeholder = emailErr;
+        }
+        if (emailErr == 'Account has been locked'){
+            document.getElementById('loginSubmit').value = 'Reactivate account';
+        }
+        if (document.getElementById('loginSubmit').value == 'Reactivate account'){
+            $reactivate = document.getElementById('loginSubmit');
+            $reactivate.addEventListener('click', function(){
+                window.location.href = "#";
+            })
         }
     </script>
 </body>
