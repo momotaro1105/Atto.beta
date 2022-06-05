@@ -6,7 +6,7 @@
     include("php/database.php");
     include("php/session.php");
     $db = DbConn('userInfo'); // DB接続
-    $result = mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
+    mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
     $errorMessage = [];
     if (count($_POST) > 0){
         $exisEmail = fldArray('email', 'basicProfile', $db); // 既存email値を取得
