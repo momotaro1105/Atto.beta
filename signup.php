@@ -13,8 +13,8 @@
     if (count($_POST) > 0){
         $exisEmail = fldArray('email', 'loginProfile', $db); // 既存email値を取得
         $exisDName = fldArray('displayName', 'loginProfile', $db); // 既存displayName値を取得
-        $frozEmail = fldArray('email', 'frozenAccounts', $db); // 既存email値を取得
-        $frozDname = fldArray('displayName', 'frozenAccounts', $db); // 既存email値を取得
+        $frozEmail = fldArray('email', 'frozenAccounts', $db);
+        $frozDname = fldArray('displayName', 'frozenAccounts', $db);
         // displayName確認
         if (in_array($_POST['displayName'], $exisDName) || in_array($_POST['displayName'], $frozDname)){ // 使用済み確認
             $errorMessage[] = 'Display name taken';
@@ -29,7 +29,7 @@
         } else if (in_array($_POST['email'], $frozEmail)){
             session_start();
             $_SESSION['email'] = $_POST['email'];
-            $errorMessage[] = 'Account has been locked';
+            $errorMessage[] = 'Account has been locked <a href="reset.php">REACTIVATE HERE</a>';
         }
         // パスワード確認
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-!#*@&])[A-Za-z\d_\-!#*@&]{8,30}$/', $_POST['password'])){ // フォーマット確認
