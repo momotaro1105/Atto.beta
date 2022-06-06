@@ -280,13 +280,13 @@ header>div{
 /* DASHBOARD.PHP */
 
 
-/* LOGIN.PHP */
-#loginBody{
+/* LOGIN.PHP, RESET.PHP */
+#loginBody, #reset{
     height: 100vh;
     display: flex;
     flex-direction: column;
 }
-#loginBody>div{
+#loginBody>div, #reset>div{
     height: calc(100vh - 50px);
     display: flex;
     flex-direction: column;
@@ -318,7 +318,7 @@ header>div{
 #loginPwd{
     margin-bottom: 60px;
 }
-#loginSubmit{
+#loginSubmit, #resetSubmit{
     background-color: #0995FF;
     border: none;
     color: white;
@@ -330,3 +330,21 @@ header>div{
     margin-right: -410px;
 }
 /* LOGIN.PHP */
+
+
+
+/* RESET.PHP */
+#resetForm{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    border-radius: 10px;
+    border: 1px solid gray;
+    padding: 30px 20px;
+}
+#resetForm>label{
+    margin-bottom: 20px;
+}
+#checkEmail{
+    margin-bottom: 30px;
+}
