@@ -5,12 +5,13 @@
 
     include("php/database.php");
     include("php/session.php");
-    $db = DbConn('userInfo'); // DB接続
-    // $db = DbConn(); // さくらDB接続
-    mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
-    mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
     $errorMessage = [];
     if (count($_POST) > 0){
+        $db = DbConn('userInfo'); // DB接続
+        // $db = DbConn(); // さくらDB接続
+        mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
+        mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
+        
         $exisEmail = fldArray('email', 'loginProfile', $db); // 既存email値を取得
         $exisDName = fldArray('displayName', 'loginProfile', $db); // 既存displayName値を取得
         $frozEmail = fldArray('email', 'frozenAccounts', $db);
@@ -29,7 +30,7 @@
         } else if (in_array($_POST['email'], $frozEmail)){
             session_start();
             $_SESSION['email'] = $_POST['email'];
-            $errorMessage[] = 'Account has been locked <a href="reset.php">REACTIVATE HERE</a>';
+            $errorMessage[] = 'Account has been locked <a href="resetform.php">REACTIVATE HERE</a>';
         }
         // パスワード確認
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-!#*@&])[A-Za-z\d_\-!#*@&]{8,30}$/', $_POST['password'])){ // フォーマット確認
