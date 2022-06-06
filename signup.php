@@ -6,11 +6,13 @@
     include("php/database.php");
     include("php/session.php");
     $db = DbConn('userInfo'); // DB接続
-    mkTbIF('basicProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
+    // $db = DbConn(); // さくらDB接続
+    mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
+    mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
     $errorMessage = [];
     if (count($_POST) > 0){
-        $exisEmail = fldArray('email', 'basicProfile', $db); // 既存email値を取得
-        $exisDName = fldArray('displayName', 'basicProfile', $db); // 既存displayName値を取得
+        $exisEmail = fldArray('email', 'loginProfile', $db); // 既存email値を取得
+        $exisDName = fldArray('displayName', 'loginProfile', $db); // 既存displayName値を取得
         $frozEmail = fldArray('email', 'frozenAccounts', $db); // 既存email値を取得
         $frozDname = fldArray('displayName', 'frozenAccounts', $db); // 既存email値を取得
         // displayName確認
@@ -41,7 +43,7 @@
             $_SESSION['email'] = $_POST['email'];
             $_POST['attempts'] = 0; // ログインセキュリティ用
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
-            $status = addData('basicProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
+            $status = addData('loginProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
             header('Location: dashboard.php');
         }
     }

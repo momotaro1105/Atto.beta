@@ -7,35 +7,36 @@
     include("php/database.php");
     include("php/session.php");
     $db = DbConn('userInfo'); // DB接続
+    // $db = DbConn(); // さくらDB接続
     $error = '';
     $pwdErr = '';
     $emailErr = '';
-    $LoginAttempts = CondSQL('attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+    $LoginAttempts = CondSQL('attempts', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
 
     if ($LoginAttempts['attempts'] < 3){ // can fail 3 times
         if (isset($_POST['password']) && isset($_SESSION['email'])){ // signupから
-            $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
+            $truePwd = CondSQL('password', 'loginProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
             if (password_verify($_POST['password'], $truePwd['password'])){ // pwd照合
                 logIn();
-                updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
+                updateSQL('loginProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
                 header('Location:dashboard.php');
             } else {
                 $error = 'Incorrect password';
-                updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
+                updateSQL('loginProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
             }
         } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
-            $emailList = fldArray('email', 'basicProfile', $db);
+            $emailList = fldArray('email', 'loginProfile', $db);
             $frozEmail = fldArray('email', 'frozenAccounts', $db);
             if (in_array($_POST['email'], $emailList)){ // メール登録済有無
-                $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
+                $truePwd = CondSQL('password', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
                 if (password_verify($_POST['password'], $truePwd['password'])){
                     logIn();
-                    updateSQL('basicProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
+                    updateSQL('loginProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
                     $_SESSION['email'] = $_POST['email'];
                     header('Location: dashboard.php');
                 } else {
                     $pwdErr = 'Password incorrect';
-                    updateSQL('basicProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
+                    updateSQL('loginProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
                 }
             } else if (!in_array($_POST['email'], $emailList) && in_array($_POST['email'], $frozEmail)){
                 $emailErr = 'Account has been locked'; 
@@ -44,9 +45,8 @@
             }
         }
     } else {
-        mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // 新テーブル作成
-        copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'basicProfile', 'email="'.$_POST['email'].'"', $db);
-        delData('basicProfile', 'email="'.$_POST['email'].'"', $db);
+        copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
+        delData('loginProfile', 'email="'.$_POST['email'].'"', $db);
         $emailErr = 'Account has been locked'; 
     }
 
@@ -110,9 +110,9 @@
         }
         if (document.getElementById('loginSubmit').value == 'Reactivate account'){
             $reactivate = document.getElementById('loginSubmit');
-            $reactivate.addEventListener('click', function(){
-                window.location.href = "#";
-            })
+            // $reactivate.addEventListener('click', function(){
+            //     window.location.href = "#";
+            // })
         }
     </script>
 </body>
