@@ -7,8 +7,8 @@
     include("php/session.php");
     $errorMessage = [];
     if (count($_POST) > 0){
-        // $db = DbConn('userInfo'); // DB接続
-        $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9'); // さくらDB接続
+        $db = DbConn('userInfo'); // DB接続
+        // $db = DbConn(); // さくらDB接続
         mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
         mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
         

@@ -5,8 +5,8 @@
     session_start();
 
     include("php/database.php");
-    // $db = DbConn('userInfo'); // DB接続
-    $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9'); // さくらDB接続
+    $db = DbConn('userInfo'); // DB接続
+    // $db = DbConn(); // さくらDB接続
 
     $allTokens = fldArray('tokenid', 'token', $db);
     $error = '';
