@@ -100,5 +100,14 @@
         $result = $PDO -> query($sql);
         return $result -> fetch(PDO::FETCH_ASSOC);
     }
-    // delData('basicProfile', 'email="'.$_POST['email'].'"', $db);     
+    // delData('basicProfile', 'email="'.$_POST['email'].'"', $db);    
+    
+    
+
+    // 作成中：イベント作成
+    // function createEvent(){
+    //     $sql = 'CREATE EVENT myevent ON SCHEDULE EVERY 10 MINUTE';
+    //     $result = $PDO -> query($sql);
+    //     return $result -> fetch(PDO::FETCH_ASSOC);
+    // }
 ?>
