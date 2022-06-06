@@ -7,10 +7,11 @@
     include("php/session.php");
     $errorMessage = [];
     if (count($_POST) > 0){
-        $db = DbConn('userInfo'); // DB接続
-        // $db = DbConn(); // さくらDB接続
+        // $db = DbConn('userInfo'); // DB接続
+        $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9'); // さくらDB接続
         mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
         mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
+        mkTbIF('token', 'id VARCHAR(256),expires INT(10)', $db);
         
         $exisEmail = fldArray('email', 'loginProfile', $db); // 既存email値を取得
         $exisDName = fldArray('displayName', 'loginProfile', $db); // 既存displayName値を取得
@@ -44,7 +45,7 @@
             $_SESSION['email'] = $_POST['email'];
             $_POST['attempts'] = 0; // ログインセキュリティ用
             $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
-            $status = addData('loginProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
+            addData('loginProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
             header('Location: dashboard.php');
         }
     }
