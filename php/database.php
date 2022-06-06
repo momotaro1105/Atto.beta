@@ -1,5 +1,5 @@
 <?php
-    // ローカル環境がデフォルト
+    // DB接続（ローカル環境がデフォルト）
     function DbConn($dbName, $host = 'localhost', $userName = 'root', $pwd = ''){
         try {
             $dsn = 'mysql:dbname='.$dbName.';host='.$host.';charset=utf8';
@@ -12,7 +12,7 @@
 
 
 
-    // テーブルが存在しない場合作成
+    // テーブル作成
     function mkTbIF($tableName, $structure, $PDO){
         try {
             $sql = 'CREATE TABLE IF NOT EXISTS '.$tableName.' (id INT(12) NOT NULL auto_increment PRIMARY KEY,'.$structure.') DEFAULT CHARSET="utf8"';
@@ -25,7 +25,7 @@
 
 
 
-    // 下記データ登録関数（のみ）で使用
+    // 下記データ登録関数で使用
     function cvtStruc($structure){
         $structureArray = explode(',', $structure);
         for ($i=0; $i<count($structureArray); $i++){
