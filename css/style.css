@@ -318,7 +318,7 @@ header>div{
 #loginPwd{
     margin-bottom: 60px;
 }
-#loginSubmit, #resetSubmit{
+#loginSubmit, #resetSubmit, #resetPwd{
     background-color: #0995FF;
     border: none;
     color: white;

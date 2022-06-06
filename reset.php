@@ -51,10 +51,8 @@
         <form method="post" id="urlResetForm">
             <label for="password">Password:</label>
                 <input type="text" name="password" id="pwd1" required>
-                <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
             <label for="password">Re-enter password:</label>
                 <input type="text" name="password1" id="pwd2" required>
-                <i class="material-icons togglepwd" id="toggle1">remove_red_eye</i>
             <input id="resetPwd" type="button" value="Reset password">
         </form>
     </div>
