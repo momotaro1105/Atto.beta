@@ -50,9 +50,9 @@
     <div>
         <form method="post" id="urlResetForm">
             <label for="password">Password:</label>
-                <input type="text" name="password" id="pwd1" required>
+                <input type="password" name="password" id="pwd1" required>
             <label for="password">Re-enter password:</label>
-                <input type="text" name="password1" id="pwd2" required>
+                <input type="password" name="password1" id="pwd2" required>
             <input id="resetPwd" type="button" value="Reset password">
         </form>
     </div>
