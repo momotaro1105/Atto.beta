@@ -33,7 +33,7 @@
         }
         return implode(',', $structureArray);
     }
-    // データ登録
+    // データ登録（フォームからデータ取得の場合）
     function addData($tableName, $structure, $PDO, $postedData){
         $structured = cvtStruc($structure);
         $add = 'INSERT INTO '.$tableName.'('.$structure.') VALUES('.$structured.')';
@@ -110,4 +110,15 @@
     //     $result = $PDO -> query($sql);
     //     return $result -> fetch(PDO::FETCH_ASSOC);
     // }
+
+
+
+    // ワンタイムURL生成
+    function uniqURL($default){ // https..から含む
+        $url = $default.'?key=';
+        $key = md5(uniqid(mt_rand(), true));
+        $url .= $key;
+        return $url;
+    }
+    // uriqURL('https://momo115.sakura.ne.jp/atto_php/reset.php');
 ?>

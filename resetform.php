@@ -10,21 +10,18 @@
     $emails = fldArray('email', 'loginProfile', $db);
     $frozEmail = fldArray('email', 'frozenAccounts', $db);
 
-    console_log(strtotime("now"));
-    console_log(strtotime("+ 10 minutes"));
-
-
-    if (in_array($_POST['email'], $emails) || in_array($_POST['email'], $frozEmail)){
-        $url = 'https://momo115.sakura.ne.jp/atto_php/reset.php?key=';
-        $secret_key = md5(uniqid(mt_rand(), true));
-        $url .= $secret_key;
+    if (in_array($_POST['email'], $emails) || in_array($_POST['email'], $frozEmail)){ // メール確認   
+        $url = 'https://momo115.sakura.ne.jp/atto_php/reset.php?key='; // デフォルト
+        $secretKey = md5(uniqid(mt_rand(), true));
+        $url .= $secretKey;
         $title = 'Atto: password reset';
         $content = "Please reset your password from below. The link is only active for the next 10 minutes.\n " . $url;
-        mb_send_mail($_POST['email'], $title, $content); 
-
-        $_POST['id'] = $secret_key;
+        mb_send_mail($_POST['email'], $title, $content); // パスワード再登録用メール送信
+        
+        mkTbIF('token', 'tokenid VARCHAR(256),expires INT(10)', $db);
+        $_POST['tokenid'] = $secretKey;
         $_POST['expires'] = strtotime("+ 10 minutes");
-        addData('token', 'id,expires', $db, $_POST);
+        addData('token', 'tokenid,expires', $db, $_POST); // データ登録
     }
 ?>
 <html lang="en">
