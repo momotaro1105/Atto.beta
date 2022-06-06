@@ -280,13 +280,13 @@ header>div{
 /* DASHBOARD.PHP */
 
 
-/* LOGIN.PHP, RESET.PHP */
-#loginBody, #reset{
+/* LOGIN.PHP, RESETFORM.PHP, RESET.PHP */
+#loginBody, #reset, #urlReset{
     height: 100vh;
     display: flex;
     flex-direction: column;
 }
-#loginBody>div, #reset>div{
+#loginBody>div, #reset>div, #urlReset>div{
     height: calc(100vh - 50px);
     display: flex;
     flex-direction: column;
@@ -329,12 +329,12 @@ header>div{
     margin-bottom: -40px;
     margin-right: -410px;
 }
-/* LOGIN.PHP */
+/* LOGIN.PHP, RESETFORM.PHP, RESET.PHP */
 
 
 
 /* RESET.PHP */
-#resetForm{
+#resetForm, #urlResetForm{
     display: flex;
     flex-direction: column;
     width: 400px;
@@ -342,9 +342,9 @@ header>div{
     border: 1px solid gray;
     padding: 30px 20px;
 }
-#resetForm>label{
+#resetForm>label, #urlResetForm>label{
     margin-bottom: 20px;
 }
-#checkEmail{
+#checkEmail, #pwd1, #pwd2{
     margin-bottom: 30px;
 }

@@ -49,9 +49,6 @@
         delData('loginProfile', 'email="'.$_POST['email'].'"', $db);
         $emailErr = 'Account has been locked'; 
     }
-
-    // forgot password
-    // reactivate account
 ?>
 
 <html lang="en">

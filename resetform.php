@@ -18,10 +18,10 @@
         $content = "Please reset your password from below. The link is only active for the next 10 minutes.\n " . $url;
         mb_send_mail($_POST['email'], $title, $content); // パスワード再登録用メール送信
         
-        mkTbIF('token', 'tokenid VARCHAR(256),expires INT(10)', $db);
+        mkTbIF('token', 'email VARCHAR(256),tokenid VARCHAR(256),expires INT(10)', $db);
         $_POST['tokenid'] = $secretKey;
         $_POST['expires'] = strtotime("+ 10 minutes");
-        addData('token', 'tokenid,expires', $db, $_POST); // データ登録
+        addData('token', 'email,tokenid,expires', $db, $_POST); // データ登録
     }
 ?>
 <html lang="en">
