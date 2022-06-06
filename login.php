@@ -50,7 +50,8 @@
         $emailErr = 'Account has been locked'; 
     }
 
-    // forgot password時に何をするか？
+    // forgot password
+    // reactivate account
 ?>
 
 <html lang="en">
@@ -68,7 +69,7 @@
         <form action="" method="post" id="loginForm">
             <label for="email">Email:</label>
                 <input type="text" name="email" id="loginEmail" value='' required>
-            <label for="password">Password: <a id="forgot" href="">Forgot password?</a></label>
+            <label for="password">Password: <a id="forgot" href="reset.php">Forgot password?</a></label>
                 <input type="password" name="password" id="loginPwd" required>
             <input id="loginSubmit" type="submit" value="Log in">
         </form>
@@ -110,9 +111,9 @@
         }
         if (document.getElementById('loginSubmit').value == 'Reactivate account'){
             $reactivate = document.getElementById('loginSubmit');
-            // $reactivate.addEventListener('click', function(){
-            //     window.location.href = "#";
-            // })
+            $reactivate.addEventListener('click', function(){
+                window.location.href = "reset.php";
+            })
         }
     </script>
 </body>
