@@ -1,3 +1,7 @@
+<!-- user profile, feed of questions and answers the user posted -->
+<!-- make a new database for q&a? -->
+<!-- make a separate database for user activity, but should I make it  -->
+
 <?php
     include("php/util.php");
     include("php/session.php");
@@ -5,6 +9,8 @@
     $header = logStatus();
 
     console_log($_SESSION);
+
+
 ?>
 
 <html lang="en">
@@ -24,10 +30,7 @@
                 <div id="userIcon">
                     <i class="fa fa-user fa-5x"></i>
                 </div>
-                <form id="userName_form" method="post" action="dashboard.php">
-                    <input id="new_displayname" type="text" name="userName" placeholder="Username: blank"><?=h($userName)?>
-                    <input type="submit" id="set_displayname" value="Edit Profile">
-                </form>
+                <input type="text" placeholder="username">
             </div>
             <table>
                 <tr>
