@@ -21,7 +21,7 @@
             exit('TableCreate Error: '.$e -> getMessage());
         }
     }
-    // $result = mkTbIF('basicProfile', 'email VARCHAR(256), password VARCHAR(256)', $dbh);
+    // mkTbIF('basicProfile', 'email VARCHAR(256), password VARCHAR(256)', $dbh);
 
 
 
@@ -50,7 +50,7 @@
             return $status;
         }
     }
-    // $status = addData('basicProfile', 'email,password', $dbh, $_POST);
+    // addData('basicProfile', 'email,password', $dbh, $_POST);
 
 
 
