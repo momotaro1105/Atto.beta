@@ -4,6 +4,9 @@
         session_start();
         $_SESSION["loggedIn"] = true;
         $_SESSION["sessionID"] = session_id();
+        if (isset($_POST['email'])){
+            $_SESSION['email'] = $_POST['email'];
+        }
     }
     // logIn();
 
