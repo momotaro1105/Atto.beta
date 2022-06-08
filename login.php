@@ -8,7 +8,7 @@
     
     if (isset($_POST['email'])){
         $db = DbConn('userInfo');
-        // $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9');
+        // $db = DbConn();
         $validEmail = fldArray('email', 'loginCred', $db);
         $frozEmail = fldArray('email', 'frozenAcct', $db);
         $error = '';
