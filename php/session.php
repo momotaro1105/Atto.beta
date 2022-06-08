@@ -5,6 +5,7 @@
         $_SESSION["loggedIn"] = true;
         $_SESSION["sessionID"] = session_id();
     }
+    // logIn();
 
 
     
@@ -14,4 +15,5 @@
         $_SESSION = [];
         session_destroy();
     }
+    // logOut();
 ?>

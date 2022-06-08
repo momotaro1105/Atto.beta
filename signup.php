@@ -1,51 +1,40 @@
 <?php
     include("php/header.php");
     include("php/util.php");
-    $header = logStatus();
-
     include("php/database.php");
     include("php/session.php");
-    $errorMessage = [];
+    include("php/format.php");
+    $header = logStatus();
+
+    $error = [];
     if (count($_POST) > 0){
-        $db = DbConn('userInfo'); // DB接続
-        // $db = DbConn(); // さくらDB接続
-        mkTbIF('loginProfile', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db); // テーブル作成
-        mkTbIF('frozenAccounts', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
+        $db = DbConn('userInfo');
+        // $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9');
+        mkTbIF('loginCred', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2) DEFAULT 0', $db);
+        mkTbIF('frozenAcct', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
         
-        $exisEmail = fldArray('email', 'loginProfile', $db); // 既存email値を取得
-        $exisDName = fldArray('displayName', 'loginProfile', $db); // 既存displayName値を取得
-        $frozEmail = fldArray('email', 'frozenAccounts', $db);
-        $frozDname = fldArray('displayName', 'frozenAccounts', $db);
-        // displayName確認
-        if (in_array($_POST['displayName'], $exisDName) || in_array($_POST['displayName'], $frozDname)){ // 使用済み確認
-            $errorMessage[] = 'Display name taken';
+        $exisEmail = fldArray('email', 'loginCred', $db);
+        $exisDName = fldArray('displayName', 'loginCred', $db);
+        $frozEmail = fldArray('email', 'frozenAcct', $db);
+        $frozDname = fldArray('displayName', 'frozenAcct', $db);
+        if (in_array($_POST['displayName'], $exisDName) || in_array($_POST['displayName'], $frozDname)){
+            $error[] = 'Display name taken';
         }
-        // メールアドレス確認
-        if (!preg_match('/^([a-zA-Z0-9])+([a-zA-Z0-9._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9._-]+)+$/', $_POST['email'])){ // フォーマット確認
-            $errorMessage[] = 'Please check your email address';
+        if (emailChk($_POST['email'])){
+            $error[] = 'Please check your email address';
         } else if (in_array($_POST['email'], $exisEmail)){
-            session_start();
-            $_SESSION['email'] = $_POST['email'];
-            $errorMessage[] = 'Email already in use: <a href="login.php">LOGIN HERE</a>';
+            $error[] = 'Email already in use: <a href="login.php">LOGIN HERE</a>';
         } else if (in_array($_POST['email'], $frozEmail)){
-            session_start();
-            $_SESSION['email'] = $_POST['email'];
-            $errorMessage[] = 'Account has been locked <a href="resetform.php">REACTIVATE HERE</a>';
+            $error[] = 'Account locked <a href="resetform.php">REACTIVATE HERE</a>';
         }
-        // パスワード確認
-        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-!#*@&])[A-Za-z\d_\-!#*@&]{8,30}$/', $_POST['password'])){ // フォーマット確認
-            $errorMessage[] = 'Password requirements not met';
+        if (pwdChk($_POST['password'])){
+            $error[] = 'Password requirements not met';
         } 
-        // エラー無しならデータ登録
-        if (count($errorMessage) == 0) {
-            $errorMessage = []; // 配列を空にする
-            session_start();
-            logIn(); // セッションオブジェクトを更新
-            $_SESSION['email'] = $_POST['email'];
-            $_POST['attempts'] = 0; // ログインセキュリティ用
-            $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 登録用pwdハッシュ化
-            addData('loginProfile', 'email,password,displayName,attempts', $db, $_POST); // データ登録
-            header('Location: dashboard.php');
+        if (count($error) == 0) {
+            logIn();
+            $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            addData('loginCred', 'email,password,displayName', $db, $_POST);
+            redirect('dashboard.php');
         }
     }
 ?>
@@ -121,9 +110,9 @@
                     <input class="userpwd" id="userpwd_2" name="password" type="password" placeholder="1+ a~z/A~Z/#/special each, 4+ characters" required>
                 </div>
                 <i class="material-icons togglepwd" id="toggle2">remove_red_eye</i>
-                    <?php if ($errorMessage !== []): ?>
-                        <?php for ($i=0;$i<count($errorMessage);$i++): ?>
-                            <span style='color:red'><?=$errorMessage[$i]?></span>
+                    <?php if ($error !== []): ?>
+                        <?php for ($i=0; $i<count($error); $i++): ?>
+                            <span style='color:red'><?=$error[$i]?></span>
                         <?php endfor; ?>
                     <?php endif; ?>
                 <input id="signup_submit" type="button" value="Sign up">
