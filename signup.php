@@ -9,7 +9,7 @@
     $error = [];
     if (count($_POST) > 0){
         $db = DbConn('userInfo');
-        // $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9');
+        // $db = DbConn();
         mkTbIF('loginCred', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2) DEFAULT 0', $db);
         mkTbIF('frozenAcct', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2)', $db);
         
