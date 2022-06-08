@@ -12,7 +12,8 @@
     $header = logStatus();
     
     $secretKey = md5(uniqid(mt_rand(), true));
-    $url = 'https://momo115.sakura.ne.jp/atto_php/reset.php?key=';
+    $url = 'http://localhost/atto_php/reset.php?key=';
+    // $url = 'https://momo115.sakura.ne.jp/atto_php/reset.php?key=';
     $url .= $secretKey;
     if (isset($_POST['email'])){
         $mail = new PHPMailer(true);
