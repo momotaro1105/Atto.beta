@@ -5,8 +5,8 @@
     session_start();
 
     include("php/database.php");
-    $db = DbConn('userInfo'); // DB接続
-    // $db = DbConn(); // さくらDB接続
+    // $db = DbConn('userInfo'); // DB接続
+    $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9'); // さくらDB接続
     $emails = fldArray('email', 'loginProfile', $db);
     $frozEmail = fldArray('email', 'frozenAccounts', $db);
 
@@ -16,7 +16,7 @@
         $url .= $secretKey;
         $title = 'Atto: password reset';
         $content = "Please reset your password from below. The link is only active for the next 10 minutes.\n " . $url;
-        mb_send_mail($_POST['email'], $title, $content); // パスワード再登録用メール送信
+        mail($_POST['email'], $title, $content); // パスワード再登録用メール送信
         
         mkTbIF('token', 'email VARCHAR(256),tokenid VARCHAR(256),expires INT(10)', $db);
         $_POST['tokenid'] = $secretKey;

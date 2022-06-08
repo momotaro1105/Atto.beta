@@ -64,11 +64,12 @@
 
 
 
-    // 条件からデータ取得（基本一つの値を想定）
+    // 条件からデータ取得（一つの値を想定）
     function CondSQL($category, $tableName, $condition = 1, $PDO){
         $sql = 'SELECT '.$category.' FROM '.$tableName.' WHERE '.$condition;
         $result = $PDO -> query($sql);
-        return $result -> fetch(PDO::FETCH_ASSOC);
+        $fetched = $result -> fetch(PDO::FETCH_ASSOC); // このままだとobject
+        return $fetched[$category];
     }
     // $truePwd = CondSQL('password', 'basicProfile', 'email="'.$_SESSION['email'].'"', $db);
 
