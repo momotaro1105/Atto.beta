@@ -4,7 +4,6 @@
     include("php/database.php");
     include("php/session.php");
     $header = logStatus();
-    session_start();
     
     if (isset($_POST['email'])){
         $db = DbConn('userInfo');
@@ -33,7 +32,7 @@
                     redirect('dashboard.php');
                 } else {
                     updateSQL('loginCred', 'attempts='.($attempts+1), 'email="'.$_POST['email'].'"', $db);
-                    $error = 'Incorrect password '.(4 - ($attempts+1)).' tries until account locked';
+                    $error = 'Incorrect password '.(3 - $attempts).' tries until account locked';
                 }
             }
         }
