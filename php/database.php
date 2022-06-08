@@ -21,11 +21,11 @@
             exit('TableCreate Error: '.$e -> getMessage());
         }
     }
-    // mkTbIF('basicProfile', 'email VARCHAR(256), password VARCHAR(256)', $dbh);
+    // mkTbIF('loginCred', 'email VARCHAR(256),password VARCHAR(256),displayName VARCHAR(256),attempts INT(2) DEFAULT 0', $db);
 
 
 
-    // 下記データ登録関数で使用
+    // 引数をbind変数のフォーマットに変更
     function cvtStruc($structure){
         $structureArray = explode(',', $structure);
         for ($i=0; $i<count($structureArray); $i++){
@@ -33,14 +33,14 @@
         }
         return implode(',', $structureArray);
     }
-    // データ登録（フォームからデータ取得の場合）
+    // データ登録
     function addData($tableName, $structure, $PDO, $postedData){
         $structured = cvtStruc($structure);
         $add = 'INSERT INTO '.$tableName.'('.$structure.') VALUES('.$structured.')';
         $stmt = $PDO -> prepare($add);
-        $structureArray = explode(',', $structure);
+        $structureArray = explode(',', $structure); // ループ用の配列作成
         for ($i=0; $i<count($structureArray); $i++){
-            $stmt -> bindValue($structureArray[$i], $postedData[$structureArray[$i]], PDO::PARAM_STR);
+            $stmt -> bindValue($structureArray[$i], $postedData[$structureArray[$i]], PDO::PARAM_STR); // index名が同じなければならない
         }
         $status = $stmt -> execute();
         if ($status == false){
@@ -54,7 +54,7 @@
 
 
 
-    // フィールドにある全ての値を配列として取得
+    // 特定のテーブルのフィールド（縦）にある全ての値を配列として取得
     function fldArray($field, $tableName, $PDO){
         $sql = 'SELECT '.$field.' FROM '.$tableName;
         $result = $PDO -> query($sql);
@@ -65,7 +65,7 @@
 
 
     // 条件からデータ取得（基本一つの値を想定）
-    function CondSQL($category, $tableName, $condition, $PDO){
+    function CondSQL($category, $tableName, $condition = 1, $PDO){
         $sql = 'SELECT '.$category.' FROM '.$tableName.' WHERE '.$condition;
         $result = $PDO -> query($sql);
         return $result -> fetch(PDO::FETCH_ASSOC);
@@ -121,4 +121,13 @@
         return $url;
     }
     // uriqURL('https://momo115.sakura.ne.jp/atto_php/reset.php');
+
+
+
+    // リンク先に移動
+    function redirect($path){
+        header('Location: '.$path);
+        exit();
+    }
+    // redirect('dashboard.php');
 ?>
