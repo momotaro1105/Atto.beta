@@ -1,6 +1,6 @@
 <?php
-    include("php/header.php");
     include("php/util.php");
+    include("php/header.php");
     include("php/database.php");
     include("php/session.php");
     include("php/format.php");
@@ -138,7 +138,7 @@
             const $userpwd1 = document.getElementById("userpwd_1");
             const $userpwd2 = document.getElementById("userpwd_2");
             let password = "";
-            if (($userpwd2 != "") && ($userpwd1.value === $userpwd2.value)){ // 両パスが合わないと、type submitに変更されずPHPにデータが送信されない
+            if (($userpwd2 != "") && ($userpwd1.value === $userpwd2.value)){ // パスが合わないと、type submitに変更されずPHPにデータが送信されない
                 $signup_submit.setAttribute("type", "submit");
             } else {
                 $userpwd1.style.borderColor = "red";
