@@ -1,6 +1,5 @@
 <?php
     include("php/header.php");
-    include("php/util.php");
     $header = logStatus();
 ?>
 <html lang="en">
