@@ -1,40 +1,38 @@
 <?php
-    include("php/header.php");
     include("php/util.php");
-    $header = logStatus();
-    session_start();
-
+    include("php/header.php");
     include("php/database.php");
-    $db = DbConn('userInfo'); // DB接続
-    // $db = DbConn(); // さくらDB接続
+    $header = logStatus();
 
-    $allTokens = fldArray('tokenid', 'token', $db);
+    $db = DbConn('userInfo');
+    // $db = DbConn();
+
+    $expireArray = fldArray('expires', 'token', $db);
+    for ($i = 0; $i < count($expireArray); $i++){
+        if (strtotime('now') > $expireArray[$i]){
+            delData('token', 'expires='.$expireArray[$i], $db);
+            console_log('expired');
+        }
+    }
     $error = '';
-    if (in_array($_GET['key'], $allTokens)){ // トークンID照合
-        $expires = CondSQL('expires', 'token', 'tokenid="'.$_GET['key'].'"', $db);
+    $tokens = fldArray('tokenid', 'token', $db);
+    if (in_array($_GET['key'], $tokens)){
         $email = CondSQL('email', 'token', 'tokenid="'.$_GET['key'].'"', $db);
-        if (strtotime('now') > $expires['expires']){ // 有効期限確認
-            $error = 'Link has expired';
-        } else if (strtotime('now') < $expires['expires'] && isset($_POST['password'])){
-            $exisEmail = fldArray('email', 'loginProfile', $db);
-            $frozEmail = fldArray('email', 'frozenAccounts', $db);
-            $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT); // 再登録用pwdハッシュ化
-            if (in_array($email['email'], $exisEmail)){
-                updateSQL('loginProfile', 'attempts=0', 'email="'.$email['email'].'"', $db); // attemptsリセット
-                updateSQL('loginProfile', 'password="'.$_POST['password'].'"', 'email="'.$email['email'].'"', $db); // パスワードリセット
-                delData('token', 'email="'.$email['email'].'"', $db);
-                header('Location: login.php');
-            } else if (in_array($email['email'], $frozEmail)){
-                updateSQL('frozenAccounts', 'attempts=0', 'email="'.$email['email'].'"', $db);
-                updateSQL('frozenAccounts', 'password="'.$_POST['password'].'"', 'email="'.$email['email'].'"', $db);
-                copyData('loginProfile(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'frozenAccounts', 'email="'.$email['email'].'"', $db);
-                delData('frozenAccounts', 'email="'.$email['email'].'"', $db);
-                delData('token', 'email="'.$email['email'].'"', $db);
-                header('Location: login.php');
-            }
+        if (isset($_POST['password'])){
+            $validEmail = fldArray('email', 'loginCred', $db);
+            $frozEmail = fldArray('email', 'frozenAcct', $db);
+            $_POST['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            if (in_array($email, $frozEmail)){
+                copyData('loginCred(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'frozenAcct', 'email="'.$email.'"', $db);
+                delData('frozenAcct', 'email="'.$email.'"', $db);
+            } 
+            updateSQL('loginCred', 'attempts=0', 'email="'.$email.'"', $db);
+            updateSQL('loginCred', 'password="'.$_POST['password'].'"', 'email="'.$email.'"', $db);
+            delData('token', 'email="'.$email.'"', $db);
+            redirect('login.php');
         }
     } else {
-        $error = 'Link is invalid';
+        $error = 'Link expired or invalid';
     }
 ?>
 <html lang="en">
