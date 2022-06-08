@@ -7,10 +7,14 @@
     include("php/session.php");
     include("php/header.php");
     $header = logStatus();
+    // ヘッダーエラーが出ている
 
     console_log($_SESSION);
 
-
+    // display basic user stats
+    // display a list of questions the user asked
+    // display a list of answers the user provided
+    // if none displayed, provide a link to feed for the user (top questions, top answers)
 ?>
 
 <html lang="en">
