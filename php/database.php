@@ -12,7 +12,7 @@
 
 
 
-    // テーブル作成
+    // テーブル作成（プライマリーidキーがデフォルトになっているため、さらにidという名の$structureは追加できない）
     function mkTbIF($tableName, $structure, $PDO){
         try {
             $sql = 'CREATE TABLE IF NOT EXISTS '.$tableName.' (id INT(12) NOT NULL auto_increment PRIMARY KEY,'.$structure.') DEFAULT CHARSET="utf8"';
@@ -114,7 +114,7 @@
 
 
 
-    // ワンタイムURL生成
+    // ワンタイムURL生成（キー保管用には向いていない）
     function uniqURL($default){ // https..から含む
         $url = $default.'?key=';
         $key = md5(uniqid(mt_rand(), true));
