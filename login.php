@@ -1,53 +1,42 @@
 <?php
-    include("php/header.php");
     include("php/util.php");
-    $header = logStatus();
-    session_start();
-
+    include("php/header.php");
     include("php/database.php");
     include("php/session.php");
-    $db = DbConn('userInfo'); // DB接続
-    // $db = DbConn(); // さくらDB接続
-    $error = '';
-    $pwdErr = '';
-    $emailErr = '';
-    $LoginAttempts = CondSQL('attempts', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
+    $header = logStatus();
+    session_start();
+    
+    if (isset($_POST['email'])){
+        $db = DbConn('userInfo');
+        // $db = DbConn('momo115_atto_demo', 'mysql57.momo115.sakura.ne.jp', 'momo115', 'atto_demo9');
+        $validEmail = fldArray('email', 'loginCred', $db);
+        $frozEmail = fldArray('email', 'frozenAcct', $db);
+        $error = '';
+        $pwdErr = '';
+        $emailErr = '';
 
-    if ($LoginAttempts['attempts'] < 3){ // can fail 3 times
-        if (isset($_POST['password']) && isset($_SESSION['email'])){ // signupから
-            $truePwd = CondSQL('password', 'loginProfile', 'email="'.$_SESSION['email'].'"', $db); // 登録済みpwdを取得
-            if (password_verify($_POST['password'], $truePwd['password'])){ // pwd照合
-                logIn();
-                updateSQL('loginProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db); // リセット
-                header('Location:dashboard.php');
-            } else {
-                $error = 'Incorrect password';
-                updateSQL('loginProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
-            }
-        } else if (!(isset($_SESSION['email'])) && (count($_POST) > 0)) { // loginから
-            $emailList = fldArray('email', 'loginProfile', $db);
-            $frozEmail = fldArray('email', 'frozenAccounts', $db);
-            if (in_array($_POST['email'], $emailList)){ // メール登録済有無
-                $truePwd = CondSQL('password', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
-                if (password_verify($_POST['password'], $truePwd['password'])){
+        if (!in_array($_POST['email'], $frozEmail) && !in_array($_POST['email'], $validEmail)){
+            $emailErr = 'Email not registered'; 
+        } else if (in_array($_POST['email'], $frozEmail)){
+            $emailErr = 'Account has been locked';
+        } else if (in_array($_POST['email'], $validEmail)){
+            $attempts = CondSQL('attempts', 'loginCred', 'email="'.$_POST['email'].'"', $db);
+            $truePwd = CondSQL('password', 'loginCred', 'email="'.$_POST['email'].'"', $db);
+            if ($attempts == 3){
+                copyData('frozenAcct(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'loginCred', 'email="'.$_POST['email'].'"', $db);
+                delData('loginCred', 'email="'.$_POST['email'].'"', $db);
+                $emailErr = 'Account has been locked';
+            } else if ($attempts < 3){
+                if (password_verify($_POST['password'], $truePwd)){
                     logIn();
-                    updateSQL('loginProfile', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
-                    $_SESSION['email'] = $_POST['email'];
-                    header('Location: dashboard.php');
+                    updateSQL('loginCred', 'attempts=0', 'email="'.$_POST['email'].'"', $db);
+                    redirect('dashboard.php');
                 } else {
-                    $pwdErr = 'Password incorrect';
-                    updateSQL('loginProfile', 'attempts='.($LoginAttempts['attempts']+1), 'email="'.$_POST['email'].'"', $db);
+                    updateSQL('loginCred', 'attempts='.($attempts+1), 'email="'.$_POST['email'].'"', $db);
+                    $error = 'Incorrect password '.(4 - ($attempts+1)).' tries until account locked';
                 }
-            } else if (!in_array($_POST['email'], $emailList) && in_array($_POST['email'], $frozEmail)){
-                $emailErr = 'Account has been locked'; 
-            } else { // メール未登録の場合
-                $emailErr = 'Email not registered'; 
             }
         }
-    } else {
-        copyData('frozenAccounts(email, password, displayName, attempts)', 'email, password, displayName, attempts', 'loginProfile', 'email="'.$_POST['email'].'"', $db);
-        delData('loginProfile', 'email="'.$_POST['email'].'"', $db);
-        $emailErr = 'Account has been locked'; 
     }
 ?>
 
@@ -74,19 +63,12 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        // toggle password
         const $toggle = document.getElementById("toggle");
         const $pwd = document.getElementById("loginPwd");
         $toggle.addEventListener("click", function (){
             const inputtype = $pwd.getAttribute("type") != "password" ? "password" : "text";
             $pwd.setAttribute("type", inputtype);
         })
-
-        // セッションにメールが既に登録されていれば
-        const sessionEmail = '<?php echo $_SESSION['email'] ?>';
-        if (sessionEmail !== ''){
-            document.getElementById('loginEmail').value = sessionEmail;
-        }
 
         // エラー表記
         const pwdError = '<?php echo $error ?>';
